@@ -142,7 +142,7 @@ describe("test basic expressions", () => {
         expect(() => parser.parse("0 ? : false")).to.throw();
     });
 });
-describe("test priority expressions", () => {
+describe("test basic precedence", () => {
     it("should multiply before adding", () => {
         expect(parser.parse("2 + 4 * 10")).to.be.equal(2 + 4 * 10);
         expect(parser.parse("2 + 4 / 10")).to.be.equal(2 + 4 / 10);
@@ -152,5 +152,9 @@ describe("test priority expressions", () => {
         expect(parser.parse("(2 + 4) * 10")).to.be.equal((2 + 4) * 10);
         expect(parser.parse("(2 + 4) / 10")).to.be.equal((2 + 4) / 10);
         expect(parser.parse("(2 + 4) % 10")).to.be.equal((2 + 4) % 10);
+    });
+    it("should test bitwise and logical precedence", () => {
+        expect(parser.parse("12 | 43 & 36")).to.be.equal(12 | 43 & 36);
+        expect(parser.parse("12 || 43 && 36")).to.be.equal(12 || 43 && 36);
     });
 });
