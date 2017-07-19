@@ -13,7 +13,7 @@
 | 10         | … == …<br/>  … != …<br/> … === …<br/> … !== … | right-to-left | Equality<br/>Inequality<br/>Strict Equality<br/>Strict Inequality           |
 | 11         |                     … & …                     | right-to-left | Bitwise AND                                                                 |
 | 12         |                     … ^ …                     | right-to-left | Bitwise XOR                                                                 |
-| 13         |                     … | …                     | right-to-left | Bitwise OR                                                                  |
+| 13         |                     … \| …                     | right-to-left | Bitwise OR                                                                  |
 | 14         |                     … && …                    | right-to-left | Logical AND                                                                 |
-| 15         |                     … || …                    | right-to-left | Logical OR                                                                  |
+| 15         |                     … \|\| …                    | right-to-left | Logical OR                                                                  |
 | 16         |              … ? … : …<br/>… ?: …             | left-to-right | Conditional Ternary<br/>Conditional Elvis                                   |
