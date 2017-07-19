@@ -65,16 +65,16 @@ EqualityOperator
 	/ "=="
 	/ "!="
 
-ShiftExpression
-	= head:AdditiveExpression tail:(__ ShiftOperator __ AdditiveExpression)* { return expression(tail, head); }
+BitwiseShiftExpression
+	= head:AdditiveExpression tail:(__ BitwiseShiftOperator __ AdditiveExpression)* { return expression(tail, head); }
 
-ShiftOperator
+BitwiseShiftOperator
 	= $("<<"  !"=")
 	/ $(">>>" !"=")
 	/ $(">>"  !"=")
 
 RelationalExpression
-	= head:ShiftExpression tail:(__ RelationalOperator __ ShiftExpression)* { return expression(tail, head); }
+	= head:BitwiseShiftExpression tail:(__ RelationalOperator __ BitwiseShiftExpression)* { return expression(tail, head); }
 
 RelationalOperator
 	= "<="
