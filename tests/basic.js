@@ -61,7 +61,7 @@ describe("test function", () => {
         expect(parser.parse("math_unknown(32)")).to.be.equal(0);
     });
     it("should test custom functions", () => {
-        parser["identifiers"]["custom_double"] = a => a * 2;
+        parser["functions"]["custom_double"] = a => a * 2;
         expect(parser.parse("custom_double(32)")).to.be.equal(64);
     });
 });
