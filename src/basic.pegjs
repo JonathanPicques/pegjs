@@ -21,7 +21,8 @@ LastExpression
 	= ConditionalExpression
 
 ConditionalExpression
-	= conditional:LogicalExpression __ "?" __ truthy:ConditionalExpression __ ":" __ falsy:ConditionalExpression { return conditional ? truthy : falsy; }
+	= conditional:LogicalExpression __ "?" __ truthy:ConditionalExpression __ ":" __ falsy:ConditionalExpression { return !!conditional ? truthy : falsy; }
+	/ conditional:LogicalExpression __ "?:" falsy:ConditionalExpression { return !!conditional ? conditional : falsy; }
 	/ LogicalExpression
 
 LogicalExpression

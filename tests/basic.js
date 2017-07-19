@@ -42,7 +42,7 @@ describe("test basic literals", () => {
     });
 });
 describe("test basic expressions", () => {
-    it("should test unary expression", () => {
+    it("should test unary expressions", () => {
         expect(parser.parse("-10")).to.be.equal(-10);
         expect(parser.parse("+10")).to.be.equal(+10);
         expect(parser.parse("-+-+100")).to.be.equal(-+-+100);
@@ -63,7 +63,7 @@ describe("test basic expressions", () => {
         expect(() => parser.parse("++10")).to.throw();
         expect(() => parser.parse("+++10")).to.throw();
     });
-    it("should test a multiplication", () => {
+    it("should test multiplication expressions", () => {
         expect(parser.parse("10 * 12")).to.be.equal(10 * 12);
         expect(parser.parse("10 / 12")).to.be.equal(10 / 12);
         expect(parser.parse("10 % 12")).to.be.equal(10 % 12);
@@ -73,7 +73,7 @@ describe("test basic expressions", () => {
         expect(() => parser.parse("10 // 12")).to.throw();
         expect(() => parser.parse("10 %% 12")).to.throw();
     });
-    it("should test an addition", () => {
+    it("should test addition expressions", () => {
         expect(parser.parse("10 + 12")).to.be.equal(10 + 12);
         expect(parser.parse("10 - 12")).to.be.equal(10 - 12);
         expect(parser.parse("0x10 + 0x12")).to.be.equal(0x10 + 0x12);
@@ -81,5 +81,54 @@ describe("test basic expressions", () => {
 
         expect(() => parser.parse("0x10 ++ 0x12")).to.throw();
         expect(() => parser.parse("0x10 -- 0x12")).to.throw();
+    });
+    it("should test shift expressions", () => {
+        expect(parser.parse("10 << 10")).to.be.equal(10 << 10);
+        expect(parser.parse("10 >>> 10")).to.be.equal(10 >>> 10);
+        expect(parser.parse("10 >> 10")).to.be.equal(10 >> 10);
+
+        expect(() => parser.parse("10 <<< 10")).to.throw();
+        expect(() => parser.parse("10 <> 10")).to.throw();
+        expect(() => parser.parse("10 >>>> 10")).to.throw();
+    });
+    it("should test relation expressions", () => {
+        expect(parser.parse("true > false")).to.be.equal(true > false);
+        expect(parser.parse("10 > 10")).to.be.equal(10 > 10);
+        expect(parser.parse("'test' > 10")).to.be.equal('test' > 10);
+
+        expect(parser.parse("10 >= 10")).to.be.equal(10 >= 10);
+        expect(parser.parse("'length' >= 'length'")).to.be.equal('length' >= 'length');
+
+        expect(parser.parse("10 < 10")).to.be.equal(10 < 10);
+        expect(parser.parse("10 < false")).to.be.equal(10 < false);
+
+        expect(parser.parse("10 <= 10")).to.be.equal(10 <= 10);
+        expect(parser.parse("10 <= 0x10")).to.be.equal(10 <= 0x10);
+    });
+    it("should test bitwise expressions", () => {
+        expect(parser.parse("0x0011 & 0x0111")).to.be.equal(0x0011 & 0x0111);
+        expect(parser.parse("0x0011 ^ 0x0111")).to.be.equal(0x0011 ^ 0x0111);
+        expect(parser.parse("0x0011 | 0x0111")).to.be.equal(0x0011 | 0x0111);
+
+        expect(() => parser.parse("10 ^^ 10")).to.throw();
+    });
+    it("should test logical expressions", () => {
+        expect(parser.parse("128 && false")).to.be.equal(128 && false);
+        expect(parser.parse("'true' || 'false'")).to.be.equal('true' || 'false');
+
+        expect(() => parser.parse("10 &&& 10")).to.throw();
+        expect(() => parser.parse("10 ||| 10")).to.throw();
+    });
+    it("should test conditional expressions", () => {
+        expect(parser.parse("123 ? 'false' : 12")).to.be.equal(123 ? 'false' : 12);
+        expect(parser.parse("123? 'false' :12")).to.be.equal(123? 'false' :12);
+        expect(parser.parse("1 ? 0 ? 1 : 2 : 0x43")).to.be.equal(1 ? 0 ? 1 : 2 : 0x43);
+
+        expect(parser.parse("19 ?: 10")).to.be.equal(19);
+        expect(parser.parse("0 ?: 10")).to.be.equal(10);
+
+        expect(parser.parse("0 ? 12 : 10 ?: false")).to.be.equal(10);
+
+        expect(() => parser.parse("0 ? : false")).to.throw();
     });
 });
