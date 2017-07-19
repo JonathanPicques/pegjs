@@ -5,7 +5,7 @@
 {
 	const parser = this;
 	const eval_value = (value) => typeof value === "string" ? `"${value}"` : value;
-	const expression = (tail, head) => tail.reduce((a, op) => eval(`${eval_value(a)}${op[1]}${eval_value(op[3])}`), head);
+	const expression = (head, tail) => tail.reduce((a, op) => eval(`${eval_value(a)}${op[1]}${eval_value(op[3])}`), head);
 	const unary_expression = (op, a) => eval(`${op}${eval_value(a)}`);
 
 	parser.functions = Object.assign({}, parser.functions, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] === "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
@@ -36,13 +36,13 @@ UnaryOperator
 	/ $"!"+
 
 ExponentiationExpression
-	= head:UnaryExpression tail:(__ ExponentiationOperator __ UnaryExpression)* { return expression(tail, head); }
+	= head:UnaryExpression tail:(__ ExponentiationOperator __ UnaryExpression)* { return expression(head, tail); }
 
 ExponentiationOperator
 	= "**"
 
 MultiplicativeExpression
-	= head:ExponentiationExpression tail:(__ MultiplicativeOperator __ ExponentiationExpression)* { return expression(tail, head); }
+	= head:ExponentiationExpression tail:(__ MultiplicativeOperator __ ExponentiationExpression)* { return expression(head, tail); }
 
 MultiplicativeOperator
 	= $("*" !"*" !"=")
@@ -50,14 +50,14 @@ MultiplicativeOperator
 	/ $("%" !"=")
 
 AdditiveExpression
-	= head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* { return expression(tail, head); }
+	= head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* { return expression(head, tail); }
 
 AdditiveOperator
 	= $("+" ![+=])
 	/ $("-" ![-=])
 
 EqualityExpression
-	= head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* { return expression(tail, head); }
+	= head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* { return expression(head, tail); }
 
 EqualityOperator
 	= "==="
@@ -66,7 +66,7 @@ EqualityOperator
 	/ "!="
 
 BitwiseShiftExpression
-	= head:AdditiveExpression tail:(__ BitwiseShiftOperator __ AdditiveExpression)* { return expression(tail, head); }
+	= head:AdditiveExpression tail:(__ BitwiseShiftOperator __ AdditiveExpression)* { return expression(head, tail); }
 
 BitwiseShiftOperator
 	= $("<<"  !"=")
@@ -74,7 +74,7 @@ BitwiseShiftOperator
 	/ $(">>"  !"=")
 
 RelationalExpression
-	= head:BitwiseShiftExpression tail:(__ RelationalOperator __ BitwiseShiftExpression)* { return expression(tail, head); }
+	= head:BitwiseShiftExpression tail:(__ RelationalOperator __ BitwiseShiftExpression)* { return expression(head, tail); }
 
 RelationalOperator
 	= "<="
@@ -83,31 +83,31 @@ RelationalOperator
 	/ $(">" !">")
 
 BitwiseAndExpression
-	= head:EqualityExpression tail:(__ BitwiseAndOperator __ EqualityExpression)* { return expression(tail, head); }
+	= head:EqualityExpression tail:(__ BitwiseAndOperator __ EqualityExpression)* { return expression(head, tail); }
 
 BitwiseAndOperator
 	= "&"
 
 BitwiseXorExpression
-	= head:BitwiseAndExpression tail:(__ BitwiseXorOperator __ BitwiseAndExpression)* { return expression(tail, head); }
+	= head:BitwiseAndExpression tail:(__ BitwiseXorOperator __ BitwiseAndExpression)* { return expression(head, tail); }
 
 BitwiseXorOperator
 	= "^"
 
 BitwiseOrExpression
-	= head:BitwiseXorExpression tail:(__ BitwiseOrOperator __ BitwiseXorExpression)* { return expression(tail, head); }
+	= head:BitwiseXorExpression tail:(__ BitwiseOrOperator __ BitwiseXorExpression)* { return expression(head, tail); }
 
 BitwiseOrOperator
 	= "|"
 
 LogicalAndExpression
-	= head:BitwiseOrExpression tail:(__ LogicalAndOperator __ BitwiseOrExpression)* { return expression(tail, head); }
+	= head:BitwiseOrExpression tail:(__ LogicalAndOperator __ BitwiseOrExpression)* { return expression(head, tail); }
 
 LogicalAndOperator
 	= "&&"
 
 LogicalOrExpression
-	= head:LogicalAndExpression tail:(__ LogicalOrOperator __ LogicalAndExpression)* { return expression(tail, head); }
+	= head:LogicalAndExpression tail:(__ LogicalOrOperator __ LogicalAndExpression)* { return expression(head, tail); }
 
 LogicalOrOperator
 	= "||"
