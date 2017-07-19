@@ -17,28 +17,38 @@
 // Expressions //
 /////////////////
 
-LastExpression
+Expression
 	= ConditionalExpression
 
-ConditionalExpression
-	= conditional:LogicalExpression __ "?" __ truthy:ConditionalExpression __ ":" __ falsy:ConditionalExpression { return !!conditional ? truthy : falsy; }
-	/ conditional:LogicalExpression __ "?:" falsy:ConditionalExpression { return !!conditional ? conditional : falsy; }
-	/ LogicalExpression
+EndExpression
+	= "(" __ expression:ConditionalExpression __ ")" { return expression; }
+	/ Identifier
+	/ Literal
 
-LogicalExpression
-	= head:BitwiseExpression tail:(__ LogicalOperator __ BitwiseExpression)* { return expression(tail, head); }
+UnaryExpression
+	= EndExpression
+	/ op:$UnaryOperator* __ arg:EndExpression { return unary_expression(op, arg); }
 
-LogicalOperator
-	= "&&"
-	/ "||"
+UnaryOperator
+	= $("+" !"=")
+	/ $("-" !"=")
+	/ $"~"+
+	/ $"!"+
 
-BitwiseExpression
-	= head:EqualityExpression tail:(__ BitwiseOperator __ EqualityExpression)* { return expression(tail, head); }
+MultiplicativeExpression
+	= head:UnaryExpression tail:(__ MultiplicativeOperator __ UnaryExpression)* { return expression(tail, head); }
 
-BitwiseOperator
-	= $("&" ![&=])
-	/ $("^" !"=")
-	/ $("|" ![|=])
+MultiplicativeOperator
+	= $("*" !"=")
+	/ $("/" !"=")
+	/ $("%" !"=")
+
+AdditiveExpression
+	= head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* { return expression(tail, head); }
+
+AdditiveOperator
+	= $("+" ![+=])
+	/ $("-" ![-=])
 
 EqualityExpression
 	= head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* { return expression(tail, head); }
@@ -49,6 +59,14 @@ EqualityOperator
 	/ "=="
 	/ "!="
 
+ShiftExpression
+	= head:AdditiveExpression tail:(__ ShiftOperator __ AdditiveExpression)* { return expression(tail, head); }
+
+ShiftOperator
+	= $("<<"  !"=")
+	/ $(">>>" !"=")
+	/ $(">>"  !"=")
+
 RelationalExpression
 	= head:ShiftExpression tail:(__ RelationalOperator __ ShiftExpression)* { return expression(tail, head); }
 
@@ -58,43 +76,40 @@ RelationalOperator
 	/ $("<" !"<")
 	/ $(">" !">")
 
-ShiftExpression
-	= head:AdditiveExpression tail:(__ ShiftOperator __ AdditiveExpression)* { return expression(tail, head); }
+BitwiseAndExpression
+	= head:EqualityExpression tail:(__ BitwiseAndOperator __ EqualityExpression)* { return expression(tail, head); }
 
-ShiftOperator
-	= $("<<"  !"=")
-	/ $(">>>" !"=")
-	/ $(">>"  !"=")
+BitwiseAndOperator
+	= "&"
 
-AdditiveExpression
-	= head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* { return expression(tail, head); }
+BitwiseXorExpression
+	= head:BitwiseAndExpression tail:(__ BitwiseXorOperator __ BitwiseAndExpression)* { return expression(tail, head); }
 
-AdditiveOperator
-	= $("+" ![+=])
-	/ $("-" ![-=])
+BitwiseXorOperator
+	= "^"
 
-MultiplicativeExpression
-	= head:UnaryExpression tail:(__ MultiplicativeOperator __ UnaryExpression)* { return expression(tail, head); }
+BitwiseOrExpression
+	= head:BitwiseXorExpression tail:(__ BitwiseOrOperator __ BitwiseXorExpression)* { return expression(tail, head); }
 
-MultiplicativeOperator
-	= $("*" !"=")
-	/ $("/" !"=")
-	/ $("%" !"=")
+BitwiseOrOperator
+	= "|"
 
-UnaryExpression
-	= Expression
-	/ op:$UnaryOperator* __ arg:Expression { return unary_expression(op, arg); }
+LogicalAndExpression
+	= head:BitwiseOrExpression tail:(__ LogicalAndOperator __ BitwiseOrExpression)* { return expression(tail, head); }
 
-UnaryOperator
-	= $("+" !"=")
-	/ $("-" !"=")
-	/ $"~"+
-	/ $"!"+
+LogicalAndOperator
+	= "&&"
 
-Expression
-	= "(" __ expression:LastExpression __ ")" { return expression; }
-	/ Identifier
-	/ Literal
+LogicalOrExpression
+	= head:LogicalAndExpression tail:(__ LogicalOrOperator __ LogicalAndExpression)* { return expression(tail, head); }
+
+LogicalOrOperator
+	= "||"
+
+ConditionalExpression
+	= conditional:LogicalOrExpression __ "?" __ truthy:ConditionalExpression __ ":" __ falsy:ConditionalExpression { return !!conditional ? truthy : falsy; }
+	/ conditional:LogicalOrExpression __ "?:" falsy:ConditionalExpression { return !!conditional ? conditional : falsy; }
+	/ LogicalOrExpression
 
 /////////////////
 // Identifiers //
@@ -166,8 +181,7 @@ DecimalSeparator
 DecimalLiteralExponentialPart
 	= ExponentialLiteralToken DecimalDigit+
 
-ExponentialLiteralToken
-    = "e"i
+ExponentialLiteralToken = "e"i
 
 StringLiteral "string"
 	= '"' chars:DoubleStringCharacter* '"' { return chars.join(""); }
