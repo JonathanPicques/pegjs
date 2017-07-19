@@ -4,8 +4,8 @@
 
 {
 	const parser = this;
-	const expression = (head, tail) => {return tail.reduce((a,op)=>{switch(op[1]){case"**":return a**op[3];case"*":return a*op[3];case"/":return a/op[3];case"%":return a%op[3];case"+":return a+op[3];case"-":return a-op[3];case"<<":return a<<op[3];case">>":return a>>op[3];case">>>":return a>>>op[3];case"<":return a<op[3];case"<=":return a<=op[3];case">":return a>op[3];case">=":return a>=op[3];case"==":return a==op[3];case"!=":return a!=op[3];case"===":return a===op[3];case"!==":return a!==op[3];case"&":return a&op[3];case"^":return a^op[3];case"|":return a|op[3];case"&&":return a&&op[3];case"||":return a||op[3]}},head)};
-	const unary_expression = (op, a) => eval(`${op}${typeof a === "string" ? `"${a}"` : a}`);
+	const unary_operation = (op, a) => eval(`${op}${typeof a === "string" ? `"${a}"` : a}`);
+	const binary_operation = (head, tail) => {return tail.reduce((a,op)=>{switch(op[1]){case"**":return a**op[3];case"*":return a*op[3];case"/":return a/op[3];case"%":return a%op[3];case"+":return a+op[3];case"-":return a-op[3];case"<<":return a<<op[3];case">>":return a>>op[3];case">>>":return a>>>op[3];case"<":return a<op[3];case"<=":return a<=op[3];case">":return a>op[3];case">=":return a>=op[3];case"==":return a==op[3];case"!=":return a!=op[3];case"===":return a===op[3];case"!==":return a!==op[3];case"&":return a&op[3];case"^":return a^op[3];case"|":return a|op[3];case"&&":return a&&op[3];case"||":return a||op[3]}},head)};
 
 	parser.functions = Object.assign({}, parser.functions, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] === "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
 	parser.identifiers = Object.assign({}, parser.identifiers, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] !== "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
@@ -26,7 +26,7 @@ EndExpression
 
 UnaryExpression
 	= EndExpression
-	/ op:$UnaryOperator* __ arg:EndExpression { return unary_expression(op, arg); }
+	/ op:$UnaryOperator* __ arg:EndExpression { return unary_operation(op, arg); }
 
 UnaryOperator
 	= $("+" !"=")
@@ -35,13 +35,13 @@ UnaryOperator
 	/ $"!"+
 
 ExponentiationExpression
-	= head:UnaryExpression tail:(__ ExponentiationOperator __ UnaryExpression)* { return expression(head, tail); }
+	= head:UnaryExpression tail:(__ ExponentiationOperator __ UnaryExpression)* { return binary_operation(head, tail); }
 
 ExponentiationOperator
 	= "**"
 
 MultiplicativeExpression
-	= head:ExponentiationExpression tail:(__ MultiplicativeOperator __ ExponentiationExpression)* { return expression(head, tail); }
+	= head:ExponentiationExpression tail:(__ MultiplicativeOperator __ ExponentiationExpression)* { return binary_operation(head, tail); }
 
 MultiplicativeOperator
 	= $("*" !"*" !"=")
@@ -49,14 +49,14 @@ MultiplicativeOperator
 	/ $("%" !"=")
 
 AdditiveExpression
-	= head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* { return expression(head, tail); }
+	= head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* { return binary_operation(head, tail); }
 
 AdditiveOperator
 	= $("+" ![+=])
 	/ $("-" ![-=])
 
 EqualityExpression
-	= head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* { return expression(head, tail); }
+	= head:RelationalExpression tail:(__ EqualityOperator __ RelationalExpression)* { return binary_operation(head, tail); }
 
 EqualityOperator
 	= "==="
@@ -65,7 +65,7 @@ EqualityOperator
 	/ "!="
 
 BitwiseShiftExpression
-	= head:AdditiveExpression tail:(__ BitwiseShiftOperator __ AdditiveExpression)* { return expression(head, tail); }
+	= head:AdditiveExpression tail:(__ BitwiseShiftOperator __ AdditiveExpression)* { return binary_operation(head, tail); }
 
 BitwiseShiftOperator
 	= $("<<"  !"=")
@@ -73,7 +73,7 @@ BitwiseShiftOperator
 	/ $(">>"  !"=")
 
 RelationalExpression
-	= head:BitwiseShiftExpression tail:(__ RelationalOperator __ BitwiseShiftExpression)* { return expression(head, tail); }
+	= head:BitwiseShiftExpression tail:(__ RelationalOperator __ BitwiseShiftExpression)* { return binary_operation(head, tail); }
 
 RelationalOperator
 	= "<="
@@ -82,31 +82,31 @@ RelationalOperator
 	/ $(">" !">")
 
 BitwiseAndExpression
-	= head:EqualityExpression tail:(__ BitwiseAndOperator __ EqualityExpression)* { return expression(head, tail); }
+	= head:EqualityExpression tail:(__ BitwiseAndOperator __ EqualityExpression)* { return binary_operation(head, tail); }
 
 BitwiseAndOperator
 	= "&"
 
 BitwiseXorExpression
-	= head:BitwiseAndExpression tail:(__ BitwiseXorOperator __ BitwiseAndExpression)* { return expression(head, tail); }
+	= head:BitwiseAndExpression tail:(__ BitwiseXorOperator __ BitwiseAndExpression)* { return binary_operation(head, tail); }
 
 BitwiseXorOperator
 	= "^"
 
 BitwiseOrExpression
-	= head:BitwiseXorExpression tail:(__ BitwiseOrOperator __ BitwiseXorExpression)* { return expression(head, tail); }
+	= head:BitwiseXorExpression tail:(__ BitwiseOrOperator __ BitwiseXorExpression)* { return binary_operation(head, tail); }
 
 BitwiseOrOperator
 	= "|"
 
 LogicalAndExpression
-	= head:BitwiseOrExpression tail:(__ LogicalAndOperator __ BitwiseOrExpression)* { return expression(head, tail); }
+	= head:BitwiseOrExpression tail:(__ LogicalAndOperator __ BitwiseOrExpression)* { return binary_operation(head, tail); }
 
 LogicalAndOperator
 	= "&&"
 
 LogicalOrExpression
-	= head:LogicalAndExpression tail:(__ LogicalOrOperator __ LogicalAndExpression)* { return expression(head, tail); }
+	= head:LogicalAndExpression tail:(__ LogicalOrOperator __ LogicalAndExpression)* { return binary_operation(head, tail); }
 
 LogicalOrOperator
 	= "||"

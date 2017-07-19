@@ -8,7 +8,7 @@ const it = mocha.it;
 const expect = chai.expect;
 const describe = mocha.describe;
 
-const grammar = fs.readFileSync(path.join("src", "basic.pegjs"));
+const grammar = fs.readFileSync(path.join("src", "expression.pegjs"));
 const parser = peg.generate(grammar.toString());
 
 describe("test literal", () => {
