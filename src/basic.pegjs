@@ -82,7 +82,7 @@ MultiplicativeOperator
 
 UnaryExpression
 	= Expression
-	/ op:UnaryOperator __ arg:Expression { return unary_expression(op, arg); }
+	/ op:$UnaryOperator* __ arg:Expression { return unary_expression(op, arg); }
 
 UnaryOperator
 	= $("+" !"=")
