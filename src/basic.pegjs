@@ -35,11 +35,17 @@ UnaryOperator
 	/ $"~"+
 	/ $"!"+
 
+ExponentiationExpression
+	= head:UnaryExpression tail:(__ ExponentiationOperator __ UnaryExpression)* { return expression(tail, head); }
+
+ExponentiationOperator
+	= "**"
+
 MultiplicativeExpression
-	= head:UnaryExpression tail:(__ MultiplicativeOperator __ UnaryExpression)* { return expression(tail, head); }
+	= head:ExponentiationExpression tail:(__ MultiplicativeOperator __ ExponentiationExpression)* { return expression(tail, head); }
 
 MultiplicativeOperator
-	= $("*" !"=")
+	= $("*" !"*" !"=")
 	/ $("/" !"=")
 	/ $("%" !"=")
 

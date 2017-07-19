@@ -108,13 +108,16 @@ describe("test expression", () => {
         expect(() => parser.parse("++10")).to.throw();
         expect(() => parser.parse("+++10")).to.throw();
     });
+    it("should test exponentiation expressions", () => {
+        expect(parser.parse("2 ** 6")).to.be.equal(2 ** 6);
+    });
     it("should test multiplication expressions", () => {
         expect(parser.parse("10 * 12")).to.be.equal(10 * 12);
         expect(parser.parse("10 / 12")).to.be.equal(10 / 12);
         expect(parser.parse("10 % 12")).to.be.equal(10 % 12);
         expect(parser.parse("10.0000 % 12.0000")).to.be.equal(10.0000 % 12.0000);
 
-        expect(() => parser.parse("10 ** 12")).to.throw();
+        expect(() => parser.parse("10 *** 12")).to.throw();
         expect(() => parser.parse("10 // 12")).to.throw();
         expect(() => parser.parse("10 %% 12")).to.throw();
     });
