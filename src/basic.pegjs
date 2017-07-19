@@ -4,8 +4,8 @@
 
 {
 	const parser = this;
-    const expression = (head, tail) => {return tail.reduce((a,op)=>{switch(op[1]){case"**":return a**op[3];case"*":return a*op[3];case"/":return a/op[3];case"%":return a%op[3];case"+":return a+op[3];case"-":return a-op[3];case"<<":return a<<op[3];case">>":return a>>op[3];case">>>":return a>>>op[3];case"<":return a<op[3];case"<=":return a<=op[3];case">":return a>op[3];case">=":return a>=op[3];case"==":return a==op[3];case"!=":return a!=op[3];case"===":return a===op[3];case"!==":return a!==op[3];case"&":return a&op[3];case"^":return a^op[3];case"|":return a|op[3];case"&&":return a&&op[3];case"||":return a||op[3]}},head)};
-    const unary_expression = (op, a) => eval(`${op}${typeof a === "string" ? `"${a}"` : a}`);
+	const expression = (head, tail) => {return tail.reduce((a,op)=>{switch(op[1]){case"**":return a**op[3];case"*":return a*op[3];case"/":return a/op[3];case"%":return a%op[3];case"+":return a+op[3];case"-":return a-op[3];case"<<":return a<<op[3];case">>":return a>>op[3];case">>>":return a>>>op[3];case"<":return a<op[3];case"<=":return a<=op[3];case">":return a>op[3];case">=":return a>=op[3];case"==":return a==op[3];case"!=":return a!=op[3];case"===":return a===op[3];case"!==":return a!==op[3];case"&":return a&op[3];case"^":return a^op[3];case"|":return a|op[3];case"&&":return a&&op[3];case"||":return a||op[3]}},head)};
+	const unary_expression = (op, a) => eval(`${op}${typeof a === "string" ? `"${a}"` : a}`);
 
 	parser.functions = Object.assign({}, parser.functions, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] === "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
 	parser.identifiers = Object.assign({}, parser.identifiers, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] !== "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
@@ -204,17 +204,17 @@ StringLiteral "string"
 	/ "`" chars:BackStringCharacter* "`" { return chars.join(""); }
 
 DoubleStringCharacter
-	= !('"' / "\\" / LineTerminator) Character { return text(); }
+	= !('"' / "\\") Character { return text(); }
 	/ "\\" sequence:EscapeSequence { return sequence; }
 	/ LineContinuation
 
 SingleStringCharacter
-	= !("'" / "\\" / LineTerminator) Character { return text(); }
+	= !("'" / "\\") Character { return text(); }
 	/ "\\" sequence:EscapeSequence { return sequence; }
 	/ LineContinuation
 
 BackStringCharacter
-	= !("`" / "\\" / LineTerminator) Character { return text(); }
+	= !("`" / "\\") Character { return text(); }
 	/ "\\" sequence:EscapeSequence { return sequence; }
 	/ LineContinuation
 

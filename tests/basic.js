@@ -40,6 +40,25 @@ describe("test literal", () => {
         expect(() => parser.parse("1.3.4")).to.throw();
         expect(() => parser.parse("0x23.5")).to.throw();
     });
+    it("should test strings", () => {
+        expect(parser.parse('"superb string"')).to.be.equal("superb string");
+        expect(parser.parse("'superb string'")).to.be.equal("superb string");
+        expect(parser.parse("`superb string`")).to.be.equal("superb string");
+
+        expect(parser.parse('"superb \\"string\\""')).to.be.equal('superb "string"');
+        expect(parser.parse("'superb \\'string\\''")).to.be.equal("superb 'string'");
+        expect(parser.parse("`superb \\`string\\``")).to.be.equal("superb `string`");
+
+        expect(parser.parse('"superb string 🎃"')).to.be.equal("superb string 🎃");
+
+        expect(parser.parse(`"multiline\nstring\nis\ngolden"`)).to.be.equal("multiline\nstring\nis\ngolden");
+        expect(parser.parse(`'multiline\nstring\nis\ngolden'`)).to.be.equal("multiline\nstring\nis\ngolden");
+        expect(parser.parse("`multiline\nstring\nis\ngolden`")).to.be.equal("multiline\nstring\nis\ngolden");
+
+        expect(() => parser.parse(`"superb string'`)).to.throw();
+        expect(() => parser.parse(`"superb string`)).to.throw();
+        expect(() => parser.parse(`superb string"`)).to.throw();
+    });
 });
 describe("test function", () => {
     it("should test basic identifiers", () => {
