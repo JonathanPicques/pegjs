@@ -100,11 +100,10 @@ Expression
 /////////////////
 
 Identifier
-	= IdentifierStart+ IdentifierPart* { return typeof identifiers[text()] === "undefined" ? identifiers[text()] = 0 : identifiers[text()]; }
+	= !Literal IdentifierStart+ IdentifierPart* { return typeof identifiers[text()] === "undefined" ? identifiers[text()] = 0 : identifiers[text()]; }
 
 IdentifierStart
 	= "_"
-	/ "-"
 	/ "$"
 	/ [a-z]i
 
