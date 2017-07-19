@@ -196,7 +196,8 @@ DecimalSeparator
 DecimalLiteralExponentialPart
 	= ExponentialLiteralToken DecimalDigit+
 
-ExponentialLiteralToken = "e"i
+ExponentialLiteralToken
+    = "e"i
 
 StringLiteral "string"
 	= '"' chars:DoubleStringCharacter* '"' { return chars.join(""); }
