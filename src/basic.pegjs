@@ -8,6 +8,7 @@
 	const expression = (tail, head) => tail.reduce((a, op) => eval(`${eval_value(a)}${op[1]}${eval_value(op[3])}`), head);
 	const unary_expression = (op, a) => eval(`${op}${eval_value(a)}`);
 
+    parser.functions = Object.assign({}, parser.identifiers, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] === "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
 	parser.identifiers = Object.assign({}, parser.identifiers, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] !== "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
 }
 
@@ -20,7 +21,8 @@ Expression
 
 EndExpression
 	= "(" __ expression:ConditionalExpression __ ")" { return expression; }
-	/ Identifier
+	/ Function
+    / Identifier
 	/ Literal
 
 UnaryExpression
@@ -108,6 +110,16 @@ ConditionalExpression
 	= conditional:LogicalOrExpression __ "?" __ truthy:ConditionalExpression __ ":" __ falsy:ConditionalExpression { return !!conditional ? truthy : falsy; }
 	/ conditional:LogicalOrExpression __ "?:" falsy:ConditionalExpression { return !!conditional ? conditional : falsy; }
 	/ LogicalOrExpression
+
+///////////////
+// Functions //
+///////////////
+
+Function
+    = name:$Identifier "(" __ args:FunctionArguments? __ ")" { const fn = parser.functions[name]; return typeof fn === "function" ? fn.apply(fn, args) : 0; }
+
+FunctionArguments
+	= exp:Expression exps:(__ "," __ Expression __ )* { return [exp, ...exps.map(e => e[3])]; }
 
 /////////////////
 // Identifiers //

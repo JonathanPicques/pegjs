@@ -11,7 +11,7 @@ const describe = mocha.describe;
 const grammar = fs.readFileSync(path.join("src", "basic.pegjs"));
 const parser = peg.generate(grammar.toString());
 
-describe("test basic literals", () => {
+describe("test literal", () => {
     it("should test null", () => {
         expect(parser.parse("null")).to.be.equal(null);
     });
@@ -41,7 +41,31 @@ describe("test basic literals", () => {
         expect(() => parser.parse("0x23.5")).to.throw();
     });
 });
-describe("test basic identifiers", () => {
+describe("test function", () => {
+    it("should test basic identifiers", () => {
+        expect(() => parser.parse("math_sin()")).to.not.throw();
+        expect(() => parser.parse("math_sin(32)")).to.not.throw();
+        expect(() => parser.parse("math_sin(32, 'hello')")).to.not.throw();
+        expect(() => parser.parse("math_sin(32, 'hello', false)")).to.not.throw();
+        expect(() => parser.parse("math_sin(32, 'hello', false, 34 >> (2))")).to.not.throw();
+
+        expect(() => parser.parse("math_sin(,)")).to.throw();
+        expect(() => parser.parse("math_sin(, 32)")).to.throw();
+        expect(() => parser.parse("math_sin(32,)")).to.throw();
+        expect(() => parser.parse("math_sin(32, )")).to.throw();
+    });
+    it("should test default math functions", () => {
+        expect(parser.parse("math_pow(2, 6)")).to.be.equal(Math.pow(2, 6));
+        expect(parser.parse("math_sin(32)")).to.be.equal(Math.sin(32));
+
+        expect(parser.parse("math_unknown(32)")).to.be.equal(0);
+    });
+    it("should test custom functions", () => {
+        parser["identifiers"]["custom_double"] = a => a * 2;
+        expect(parser.parse("custom_double(32)")).to.be.equal(64);
+    });
+});
+describe("test identifier", () => {
     it("should test basic identifiers", () => {
         expect(parser.parse("koala")).to.be.equal(0);
         expect(parser.parse("_ident900")).to.be.equal(0);
@@ -49,6 +73,8 @@ describe("test basic identifiers", () => {
         expect(parser.parse("nulled")).to.be.equal(0);
         expect(parser.parse("falsefalse")).to.be.equal(0);
         expect(parser.parse("ffalse")).to.be.equal(0);
+
+        expect(() => parser.parse("9true")).to.throw();
     });
     it("should test default math identifiers", () => {
         expect(parser.parse("math_PI")).to.be.equal(Math.PI);
@@ -60,7 +86,7 @@ describe("test basic identifiers", () => {
         expect(parser.parse("custom_id")).to.be.equal(0xDEAD);
     });
 });
-describe("test basic expressions", () => {
+describe("test expression", () => {
     it("should test unary expressions", () => {
         expect(parser.parse("-10")).to.be.equal(-10);
         expect(parser.parse("+10")).to.be.equal(+10);
@@ -151,7 +177,7 @@ describe("test basic expressions", () => {
         expect(() => parser.parse("0 ? : false")).to.throw();
     });
 });
-describe("test basic precedence", () => {
+describe("test expression precedence", () => {
     it("should multiply before adding", () => {
         expect(parser.parse("2 + 4 * 10")).to.be.equal(2 + 4 * 10);
         expect(parser.parse("2 + 4 / 10")).to.be.equal(2 + 4 / 10);
