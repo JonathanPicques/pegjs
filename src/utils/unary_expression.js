@@ -1,4 +1,5 @@
-module.exports = (head, tail) => {
+// noinspection JSUnusedGlobalSymbols
+const unary_expression = (head, tail) => {
     return head.reduce((a, operator) => {
         switch (operator) {
             case "!":

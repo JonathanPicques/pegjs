@@ -1,4 +1,5 @@
-module.exports = (head, tail) => {
+// noinspection JSUnusedGlobalSymbols
+const expression = (head, tail) => {
     return tail.reduce((a, op) => {
         switch (op[1]) {
             case "**" :

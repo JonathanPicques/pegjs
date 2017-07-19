@@ -197,9 +197,10 @@ describe("test expression precedence", () => {
     });
 });
 describe("test complex expression", () => {
-    it("should test a complex expression", () => {
+    it("should test complex expressions", () => {
         // noinspection PointlessArithmeticExpressionJS
         expect(parser.parse("((((((((32 * 2)))))))) * 1 + 1")).to.be.equal(((((((((32 * 2)))))))) * 1 + 1);
-        expect(parser.parse("5 + ((1 + 2) * 4) - 3")).to.be.equal(5 + ((1 + 2) * 4) - 3);
+        // noinspection ConstantConditionalExpressionJS
+        expect(parser.parse("1 - -(-true ? (32 * ((34 + 10) - +10) & 32 | 78) : 24 ^ 321)")).to.be.equal(1 - -(-true ? (32 * ((34 + 10) - +10) & 32 | 78) : 24 ^ 321));
     });
 });
