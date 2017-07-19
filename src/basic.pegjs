@@ -3,14 +3,12 @@
 ///////////
 
 {
-	// TODO: Remove eval
+	const parser = this;
 	const eval_value = (value) => typeof value === "string" ? `"${value}"` : value;
-	// TODO: Not production ready, should switch/case over all operators...
 	const expression = (tail, head) => tail.reduce((a, op) => eval(`${eval_value(a)}${op[1]}${eval_value(op[3])}`), head);
-	// TODO: Not production ready, should switch/case over all operators...
 	const unary_expression = (op, a) => eval(`${op}${eval_value(a)}`);
-	// TODO: Identifiers must be configurable
-	const identifiers = {"one": 1, "two": 2};
+
+	parser.identifiers = Object.assign({}, parser.identifiers, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] !== "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
 }
 
 /////////////////
@@ -116,7 +114,7 @@ ConditionalExpression
 /////////////////
 
 Identifier
-	= !IdentifierReserved IdentifierStart+ IdentifierPart* { return typeof identifiers[text()] === "undefined" ? identifiers[text()] = 0 : identifiers[text()]; }
+	= !IdentifierReserved IdentifierStart+ IdentifierPart* { const id = parser.identifiers[text()]; return typeof id === "undefined" ? 0 : id; }
 
 IdentifierStart
 	= "_"

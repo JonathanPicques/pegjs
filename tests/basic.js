@@ -50,6 +50,15 @@ describe("test basic identifiers", () => {
         expect(parser.parse("falsefalse")).to.be.equal(0);
         expect(parser.parse("ffalse")).to.be.equal(0);
     });
+    it("should test default math identifiers", () => {
+        expect(parser.parse("math_PI")).to.be.equal(Math.PI);
+        expect(parser.parse("math_E")).to.be.equal(Math.E);
+        expect(parser.parse("math_Unknown")).to.be.equal(0);
+    });
+    it("should test custom identifiers", () => {
+        parser["identifiers"]["custom_id"] = 0xDEAD;
+        expect(parser.parse("custom_id")).to.be.equal(0xDEAD);
+    });
 });
 describe("test basic expressions", () => {
     it("should test unary expressions", () => {
