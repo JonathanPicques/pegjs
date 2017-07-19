@@ -101,7 +101,7 @@ Expression
 /////////////////
 
 Identifier
-	= !Literal IdentifierStart+ IdentifierPart* { return typeof identifiers[text()] === "undefined" ? identifiers[text()] = 0 : identifiers[text()]; }
+	= !IdentifierReserved IdentifierStart+ IdentifierPart* { return typeof identifiers[text()] === "undefined" ? identifiers[text()] = 0 : identifiers[text()]; }
 
 IdentifierStart
 	= "_"
@@ -111,6 +111,10 @@ IdentifierStart
 IdentifierPart
 	= IdentifierStart
 	/ [0-9]
+
+IdentifierReserved
+	= NullLiteral
+    / BooleanLiteral
 
 //////////////
 // Literals //
@@ -126,17 +130,17 @@ NullLiteral "null"
 	= NullLiteralToken { return null; }
 
 NullLiteralToken
-	= "null"
+	= "null" !IdentifierPart
 
 BooleanLiteral "boolean"
 	= TrueLiteralToken { return true; }
 	/ FalseLiteralToken { return false; }
 
 TrueLiteralToken
-	= "true"
+	= "true" !IdentifierPart
 
 FalseLiteralToken
-	= "false"
+	= "false" !IdentifierPart
 
 NumericLiteral "number"
 	= HexadecimalLiteral
@@ -162,7 +166,8 @@ DecimalSeparator
 DecimalLiteralExponentialPart
 	= ExponentialLiteralToken DecimalDigit+
 
-ExponentialLiteralToken = "e"i
+ExponentialLiteralToken
+    = "e"i
 
 StringLiteral "string"
 	= '"' chars:DoubleStringCharacter* '"' { return chars.join(""); }

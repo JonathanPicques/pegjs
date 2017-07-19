@@ -41,6 +41,16 @@ describe("test basic literals", () => {
         expect(() => parser.parse("0x23.5")).to.throw();
     });
 });
+describe("test basic identifiers", () => {
+    it("should test basic identifiers", () => {
+        expect(parser.parse("koala")).to.be.equal(0);
+        expect(parser.parse("_ident900")).to.be.equal(0);
+        expect(parser.parse("trues")).to.be.equal(0);
+        expect(parser.parse("nulled")).to.be.equal(0);
+        expect(parser.parse("falsefalse")).to.be.equal(0);
+        expect(parser.parse("ffalse")).to.be.equal(0);
+    });
+});
 describe("test basic expressions", () => {
     it("should test unary expressions", () => {
         expect(parser.parse("-10")).to.be.equal(-10);
