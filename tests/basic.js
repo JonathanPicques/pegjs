@@ -121,7 +121,7 @@ describe("test basic expressions", () => {
     });
     it("should test conditional expressions", () => {
         expect(parser.parse("123 ? 'false' : 12")).to.be.equal(123 ? 'false' : 12);
-        expect(parser.parse("123? 'false' :12")).to.be.equal(123? 'false' :12);
+        expect(parser.parse("123? 'false' :12")).to.be.equal(123 ? 'false' : 12);
         expect(parser.parse("1 ? 0 ? 1 : 2 : 0x43")).to.be.equal(1 ? 0 ? 1 : 2 : 0x43);
 
         expect(parser.parse("19 ?: 10")).to.be.equal(19);
@@ -130,5 +130,17 @@ describe("test basic expressions", () => {
         expect(parser.parse("0 ? 12 : 10 ?: false")).to.be.equal(10);
 
         expect(() => parser.parse("0 ? : false")).to.throw();
+    });
+});
+describe("test priority expressions", () => {
+    it("should multiply before adding", () => {
+        expect(parser.parse("2 + 4 * 10")).to.be.equal(2 + 4 * 10);
+        expect(parser.parse("2 + 4 / 10")).to.be.equal(2 + 4 / 10);
+        expect(parser.parse("2 + 4 % 10")).to.be.equal(2 + 4 % 10);
+    });
+    it("should add before multiply", () => {
+        expect(parser.parse("(2 + 4) * 10")).to.be.equal((2 + 4) * 10);
+        expect(parser.parse("(2 + 4) / 10")).to.be.equal((2 + 4) / 10);
+        expect(parser.parse("(2 + 4) % 10")).to.be.equal((2 + 4) % 10);
     });
 });
