@@ -8,7 +8,7 @@
 	const expression = (tail, head) => tail.reduce((a, op) => eval(`${eval_value(a)}${op[1]}${eval_value(op[3])}`), head);
 	const unary_expression = (op, a) => eval(`${op}${eval_value(a)}`);
 
-	parser.functions = Object.assign({}, parser.identifiers, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] === "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
+	parser.functions = Object.assign({}, parser.functions, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] === "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
 	parser.identifiers = Object.assign({}, parser.identifiers, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] !== "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
 }
 

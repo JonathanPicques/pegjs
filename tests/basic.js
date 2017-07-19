@@ -196,3 +196,10 @@ describe("test expression precedence", () => {
         expect(parser.parse("12 || 43 && 36")).to.be.equal(12 || 43 && 36);
     });
 });
+describe("test complex expression", () => {
+    it("should test a complex expression", () => {
+        // noinspection PointlessArithmeticExpressionJS
+        expect(parser.parse("((((((((32 * 2)))))))) * 1 + 1")).to.be.equal(((((((((32 * 2)))))))) * 1 + 1);
+        expect(parser.parse("5 + ((1 + 2) * 4) - 3")).to.be.equal(5 + ((1 + 2) * 4) - 3);
+    });
+});
