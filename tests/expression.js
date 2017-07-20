@@ -8,8 +8,12 @@ const it = mocha.it;
 const expect = chai.expect;
 const describe = mocha.describe;
 
-const grammar = fs.readFileSync(path.join("src", "expression.pegjs"));
-const parser = peg.generate(grammar.toString());
+const grammar_abstraction = fs.readFileSync(path.join("src", "abstraction.pegjs"));
+const grammar_expression = fs.readFileSync(path.join("src", "expression.pegjs"));
+const parser = peg.generate(`
+    ${grammar_abstraction.toString()}
+    ${grammar_expression.toString()}
+`);
 
 describe("test literal", () => {
     it("should test null", () => {

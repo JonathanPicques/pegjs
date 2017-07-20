@@ -1,3 +1,18 @@
+Expression.pegjs
+================
+
+Defines a grammar for arithmetical expressions and operations, identifiers, functions and literal types.
+
+Defines
+---
+
+- Expression
+- Identifier
+- Function
+- Literal (NullLiteral / NumberLiteral / StringLiteral)
+
+Operation precedence
+---
 | Precedence |                    Operator                   | Associativity | Description                                                                 |
 |------------|:---------------------------------------------:|:-------------:|-----------------------------------------------------------------------------|
 | 0          |                      (…)                      |      ...      | Grouping                                                                    |
