@@ -29,4 +29,7 @@ describe("test message", () => {
         expect(() => parser.parse(":a")).to.throw();
         expect(() => parser.parse("a::a")).to.throw();
     });
+    it("should test string coercion", () => {
+        expect(parser.parse(`32 + 32 : true ? false : true`)[0]).to.be.eql({"author": "64", "content": "false"});
+    });
 });

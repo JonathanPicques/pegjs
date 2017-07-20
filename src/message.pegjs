@@ -10,8 +10,8 @@ Message "message"
 
 MessageAuthor "message author"
 	= $Identifier
-	/ Expression
+	/ expression:Expression { return "" + expression; }
 
 MessageContent "message content"
 	= $Identifier
-	/ Expression
+	/ expression:Expression { return "" + expression; }
