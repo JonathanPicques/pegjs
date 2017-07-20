@@ -84,8 +84,12 @@ describe("test function", () => {
         expect(parser.parse("math_unknown(32)")).to.be.equal(0);
     });
     it("should test custom functions", () => {
-        parser["functions"]["custom_double"] = a => a * 2;
-        expect(parser.parse("custom_double(32)")).to.be.equal(64);
+        const options = {
+            "functions": {
+                "custom_double": a => a * 2
+            }
+        };
+        expect(parser.parse("custom_double(32)", options)).to.be.equal(64);
     });
 });
 describe("test identifier", () => {
@@ -105,8 +109,12 @@ describe("test identifier", () => {
         expect(parser.parse("math_Unknown")).to.be.equal(0);
     });
     it("should test custom identifiers", () => {
-        parser["identifiers"]["custom_id"] = 0xDEAD;
-        expect(parser.parse("custom_id")).to.be.equal(0xDEAD);
+        const options = {
+            "identifiers": {
+                "custom_id": 0xDEAD
+            }
+        };
+        expect(parser.parse("custom_id", options)).to.be.equal(0xDEAD);
     });
 });
 describe("test expression", () => {

@@ -108,7 +108,7 @@ ConditionalExpression
 ///////////////
 
 Function
-	= name:$Identifier "(" __ args:FunctionArguments? __ ")" { const fn = parser.functions[name]; return typeof fn === "function" ? fn.apply(fn, args) : 0; }
+	= name:$Identifier "(" __ args:FunctionArguments? __ ")" { const fn = options.functions[name]; return typeof fn === "function" ? fn.apply(fn, args) : 0; }
 
 FunctionArguments
 	= exp:Expression exps:(__ "," __ Expression __ )* { return [exp, ...exps.map(e => e[3])]; }
@@ -118,7 +118,7 @@ FunctionArguments
 /////////////////
 
 Identifier
-	= !IdentifierReserved IdentifierStart+ IdentifierPart* { const id = parser.identifiers[text()]; return typeof id === "undefined" ? 0 : id; }
+	= !IdentifierReserved IdentifierStart+ IdentifierPart* { const id = options.identifiers[text()]; return typeof id === "undefined" ? 0 : id; }
 
 IdentifierStart
 	= "_"
