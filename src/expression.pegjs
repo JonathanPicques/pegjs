@@ -13,7 +13,7 @@ EndExpression
 
 UnaryExpression
 	= EndExpression
-	/ op:$UnaryOperator* __ arg:EndExpression { return unary_operation(op, arg); }
+	/ head:$UnaryOperator* __ tail:EndExpression { return unary_operation(head, tail); }
 
 UnaryOperator
 	= $("+" !"=")
@@ -108,17 +108,17 @@ ConditionalExpression
 ///////////////
 
 Function
-	= name:$Identifier "(" __ args:FunctionArguments? __ ")" { const fn = options.functions[name]; return typeof fn === "function" ? fn.apply(fn, args) : 0; }
+	= name:$Identifier "(" __ args:FunctionArguments? __ ")" { return eval_functions(name, args); }
 
 FunctionArguments
-	= exp:Expression exps:(__ "," __ Expression __ )* { return [exp, ...exps.map(e => e[3])]; }
+	= expression:Expression expressions:(__ "," __ Expression __ )* { return [expression, ...expressions.map(e => e[3])]; }
 
 /////////////////
 // Identifiers //
 /////////////////
 
 Identifier
-	= !IdentifierReserved IdentifierStart+ IdentifierPart* { const id = options.identifiers[text()]; return typeof id === "undefined" ? 0 : id; }
+	= !IdentifierReserved IdentifierStart+ IdentifierPart* { return eval_identifiers(text()); }
 
 IdentifierStart
 	= "_"
