@@ -10,9 +10,11 @@ const describe = mocha.describe;
 
 const grammar_abstraction = fs.readFileSync(path.join("src", "abstraction.pegjs"));
 const grammar_expression = fs.readFileSync(path.join("src", "expression.pegjs"));
+const grammar_unicode = fs.readFileSync(path.join("src", "unicode.pegjs"));
 const parser = peg.generate(`
     ${grammar_abstraction.toString()}
     ${grammar_expression.toString()}
+    ${grammar_unicode.toString()}
 `);
 
 describe("test literal", () => {
@@ -65,7 +67,7 @@ describe("test literal", () => {
     });
 });
 describe("test function", () => {
-    it("should test basic identifiers", () => {
+    it("should test basic functions", () => {
         expect(() => parser.parse("math_sin()")).to.not.throw();
         expect(() => parser.parse("math_sin(32)")).to.not.throw();
         expect(() => parser.parse("math_sin(32, 'hello')")).to.not.throw();
@@ -84,22 +86,33 @@ describe("test function", () => {
         expect(parser.parse("math_unknown(32)")).to.be.equal(0);
     });
     it("should test custom functions", () => {
+        // noinspection NonAsciiCharacters
         const options = {
             "functions": {
-                "custom_double": a => a * 2
+                "custom_double": a => a * 2,
+                "âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ": a => a * 3
             }
         };
         expect(parser.parse("custom_double(32)", options)).to.be.equal(64);
+        expect(parser.parse("âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ(32)", options)).to.be.equal(96);
+
+        expect(() => parser.parse("9ufo(32)")).to.throw();
     });
 });
 describe("test identifier", () => {
     it("should test basic identifiers", () => {
+        expect(parser.parse("___$$$____")).to.be.equal(0);
+        expect(parser.parse("$line$")).to.be.equal(0);
+        expect(parser.parse("__dirname")).to.be.equal(0);
         expect(parser.parse("koala")).to.be.equal(0);
         expect(parser.parse("_ident900")).to.be.equal(0);
         expect(parser.parse("trues")).to.be.equal(0);
         expect(parser.parse("nulled")).to.be.equal(0);
         expect(parser.parse("falsefalse")).to.be.equal(0);
         expect(parser.parse("ffalse")).to.be.equal(0);
+        expect(parser.parse("accentué")).to.be.equal(0);
+        expect(parser.parse("âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ_12__")).to.be.equal(0);
+        expect(parser.parse("_ä_ë__$$__k_")).to.be.equal(0);
 
         expect(() => parser.parse("9true")).to.throw();
     });
@@ -109,12 +122,15 @@ describe("test identifier", () => {
         expect(parser.parse("math_Unknown")).to.be.equal(0);
     });
     it("should test custom identifiers", () => {
+        // noinspection NonAsciiCharacters
         const options = {
             "identifiers": {
-                "custom_id": 0xDEAD
+                "custom_id": 0xDEAD,
+                "âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ": 0xDEAD
             }
         };
         expect(parser.parse("custom_id", options)).to.be.equal(0xDEAD);
+        expect(parser.parse("âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ", options)).to.be.equal(0xDEAD);
     });
 });
 describe("test expression", () => {

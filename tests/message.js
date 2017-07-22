@@ -10,11 +10,13 @@ const describe = mocha.describe;
 
 const grammar_abstraction = fs.readFileSync(path.join("src", "abstraction.pegjs"));
 const grammar_expression = fs.readFileSync(path.join("src", "expression.pegjs"));
+const grammar_unicode = fs.readFileSync(path.join("src", "unicode.pegjs"));
 const grammar_message = fs.readFileSync(path.join("src", "message.pegjs"));
 const parser = peg.generate(`
     ${grammar_abstraction.toString()}
     ${grammar_message.toString()}
     ${grammar_expression.toString()}
+    ${grammar_unicode.toString()}
 `);
 
 describe("test message", () => {

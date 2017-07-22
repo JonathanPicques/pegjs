@@ -123,7 +123,7 @@ Identifier
 IdentifierStart
 	= "_"
 	/ "$"
-	/ [a-z]i
+	/ UnicodeLatinLetter
 
 IdentifierPart
 	= IdentifierStart
