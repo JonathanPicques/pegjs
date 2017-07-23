@@ -1,9 +1,13 @@
+/////////////////
+// Abstraction //
+/////////////////
+
 {
     options.functions = Object.assign({}, options.functions, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] === "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
     options.identifiers = Object.assign({}, options.identifiers, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] !== "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
 
-    options.functions_ = [];
-    options.identifiers_ = [];
+    options.functions_orders = [];
+    options.identifiers_orders = [];
 
     const unary_operation = (head, tail) => {
         return eval(`${head}${typeof tail === "string" ? `"${tail}"` : tail}`)
@@ -63,7 +67,7 @@
     const eval_functions = (name, args) => {
         const fn = options.functions[name];
         if (typeof fn !== "function") {
-            options.functions_.push(name);
+            options.functions_orders.push(name);
             return 0;
         }
         return fn.apply(fn, args);
@@ -71,7 +75,7 @@
     const eval_identifiers = (name) => {
         const id = options.identifiers[name];
         if (typeof id === "undefined") {
-            options.identifiers_.push(name);
+            options.identifiers_orders.push(name);
             return 0;
         }
         return id;

@@ -1,3 +1,7 @@
+/////////////////////
+// Unicode letters //
+/////////////////////
+
 UnicodeLatinLetter
 	= UnicodeLatinBasicLetter
 	/ UnicodeLatinSupplementLetter
