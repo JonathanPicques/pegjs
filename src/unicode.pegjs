@@ -1,3 +1,29 @@
+//////////////////////////////////////////////
+// Unicode whitespaces and line terminators //
+//////////////////////////////////////////////
+
+__
+    = UnicodeWhitespace*
+
+UnicodeWhitespace
+	= "\t"
+	/ "\v"
+	/ "\f"
+	/ " "
+	/ "\u00A0"
+	/ "\uFEFF"
+	/ [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
+
+UnicodeLineTerminator
+	= [\n\r\u2028\u2029]
+
+UnicodeLineTerminatorSequence
+	= "\n"
+	/ "\r\n"
+	/ "\r"
+	/ "\u2028"
+	/ "\u2029"
+
 /////////////////////
 // Unicode letters //
 /////////////////////

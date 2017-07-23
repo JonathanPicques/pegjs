@@ -3,7 +3,7 @@
 /////////////
 
 Messages "messages"
-	= messages:(Message __ LineTerminatorSequence*)* { return messages.map(m => m[0]); }
+	= messages:(Message __ UnicodeLineTerminatorSequence*)* { return messages.map(m => m[0]); }
 
 Message "message"
 	= author:MessageAuthor __ ":" __ content:MessageContent { return {author, content}; }

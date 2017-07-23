@@ -207,7 +207,7 @@ BackStringCharacter
 	/ LineContinuation
 
 LineContinuation
-	= "\\" LineTerminatorSequence { return ""; }
+	= "\\" UnicodeLineTerminatorSequence { return ""; }
 
 EscapeSequence
 	= CharacterEscapeSequence
@@ -232,7 +232,7 @@ SingleEscapeCharacter
 	/ "v" { return "\v"; }
 
 NonEscapeCharacter
-	= !(EscapeCharacter / LineTerminator) Character { return text(); }
+	= !(EscapeCharacter / UnicodeLineTerminator) Character { return text(); }
 
 EscapeCharacter
 	= SingleEscapeCharacter
@@ -248,35 +248,3 @@ UnicodeEscapeSequence
 
 Character
 	= .
-
-/////////////
-// Commons //
-/////////////
-
-WhiteSpace
-	= "\t"
-	/ "\v"
-	/ "\f"
-	/ " "
-	/ "\u00A0"
-	/ "\uFEFF"
-	/ [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
-
-LineTerminator
-	= [\n\r\u2028\u2029]
-
-LineTerminatorSequence
-	= "\n"
-	/ "\r\n"
-	/ "\r"
-	/ "\u2028"
-	/ "\u2029"
-
-/////////////
-// Ignores //
-/////////////
-
-_
-	= WhiteSpace
-__
-	= WhiteSpace*

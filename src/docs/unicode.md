@@ -1,9 +1,13 @@
 Unicode.pegjs
-================
+===
 
-Defines a grammar for several unicode groups
+Defines a grammar for several unicode handy ranges _(Not made to be accurate.)_
 
 Defines
 ---
 
-- UnicodeLatinLetter
+- ```__``` (```UnicodeWhitespace*```)
+- ```UnicodeWhitespace```
+- ```UnicodeLineTerminator```
+- ```UnicodeLineTerminatorSequence```
+- ```UnicodeLatinLetter```
