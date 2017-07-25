@@ -3,3 +3,4 @@
 
 # Grammar generator
 compile.js
+compile.pegjs
