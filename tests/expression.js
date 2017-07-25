@@ -133,6 +133,24 @@ describe("test identifier", () => {
         expect(parser.parse("âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ", options)).to.be.equal(0xDEAD);
     });
 });
+describe("test function and identifier order", () => {
+    it("should test function order", () => {
+        const options = {};
+        parser.parse("math_sin(12) + math_cos(12)", options);
+        expect([...options.functions_order]).to.be.eql(["math_sin", "math_cos"]);
+    });
+    it("should test identifier order", () => {
+        const options = {};
+        parser.parse("my + story + is + interesting", options);
+        expect([...options.identifiers_order]).to.be.eql(["my", "story", "is", "interesting"]);
+    });
+    it("should test identifier and function order", () => {
+        const options = {};
+        parser.parse("my + math_sin(12) + story + math_cos(12) + ends", options);
+        expect([...options.functions_order]).to.be.eql(["math_sin", "math_cos"]);
+        expect([...options.identifiers_order]).to.be.eql(["my", "story", "ends"]);
+    });
+});
 describe("test expression", () => {
     it("should test unary expressions", () => {
         expect(parser.parse("-10")).to.be.equal(-10);
