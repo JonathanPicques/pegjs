@@ -63,12 +63,14 @@
 		}, head);
 	};
 	const eval_functions = (name, args) => {
-    	const fn = options.functions[name];
-        return typeof fn === "function" ? fn.apply(fn, args) : 0;
-    };
-    const eval_identifiers = (name) => {
-    	const id = options.identifiers[name];
-    	if (!options.identifiers_order.includes(name)) options.identifiers_order.push(name);
-    	return typeof id !== "undefined" ? id : 0;
-    };
+		const fn = options.functions[name];
+		return typeof fn === "function" ? fn.apply(fn, args) : 0;
+	};
+	const eval_identifiers = (name) => {
+		const id = options.identifiers[name];
+		if (typeof id === "undefined" && !options.identifiers_order.includes(name)) {
+			options.identifiers_order.push(name);
+		}
+		return typeof id !== "undefined" ? id : 0;
+	};
 }

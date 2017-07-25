@@ -134,9 +134,19 @@ describe("test identifier", () => {
     });
 });
 describe("test identifier order", () => {
-    it("should test identifier order", () => {
+    it("should test basic identifier order", () => {
         const options = {};
-        parser.parse("math_cos(32) + my + story + math_sin(12) + is + interesting", options);
+        parser.parse("my + story + is + interesting", options);
+        expect([...options.identifiers_order]).to.be.eql(["my", "story", "is", "interesting"]);
+    });
+    it("should test identifier order with pre-existing identifiers", () => {
+        const options = {};
+        parser.parse("my + story + math_PI + is + interesting", options);
+        expect([...options.identifiers_order]).to.be.eql(["my", "story", "is", "interesting"]);
+    });
+    it("should test identifier order with pre-existing identifiers and functions", () => {
+        const options = {};
+        parser.parse("my + story + math_PI + is + math_sin(32) + interesting", options);
         expect([...options.identifiers_order]).to.be.eql(["my", "story", "is", "interesting"]);
     });
 });
