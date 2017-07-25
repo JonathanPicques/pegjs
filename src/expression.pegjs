@@ -108,7 +108,7 @@ ConditionalExpression
 ///////////////
 
 Function
-	= name:$Identifier "(" __ args:FunctionArguments? __ ")" { return eval_functions(name, args); }
+	= name:$Identifier "(" __ args:FunctionArguments? __ ")" { return eval_function(name, args); }
 
 FunctionArguments
 	= expression:Expression expressions:(__ "," __ Expression __ )* { return [expression, ...expressions.map(e => e[3])]; }
@@ -118,7 +118,7 @@ FunctionArguments
 /////////////////
 
 Identifier
-	= !IdentifierReserved IdentifierStart+ IdentifierPart* { return eval_identifiers(text()); }
+	= !IdentifierReserved IdentifierStart+ IdentifierPart* { return eval_identifier(text()); }
 
 IdentifierStart
 	= "_"

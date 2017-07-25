@@ -62,11 +62,11 @@
 			}
 		}, head);
 	};
-	const eval_functions = (name, args) => {
+	const eval_function = (name, args) => {
 		const fn = options.functions[name];
 		return typeof fn === "function" ? fn.apply(fn, args) : 0;
 	};
-	const eval_identifiers = (name) => {
+	const eval_identifier = (name) => {
 		const id = options.identifiers[name];
 		if (typeof id === "undefined" && !options.identifiers_order.includes(name)) {
 			options.identifiers_order.push(name);
