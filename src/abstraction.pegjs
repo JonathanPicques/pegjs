@@ -5,8 +5,6 @@
 {
 	options.functions = Object.assign({}, options.functions, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] === "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
 	options.identifiers = Object.assign({}, options.identifiers, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] !== "function").reduce((a, op) => { a["math_" + op] = Math[op]; return a; }, {}));
-
-	options.functions_order = [];
 	options.identifiers_order = [];
 
 	const unary_operation = (head, tail) => {
@@ -66,7 +64,6 @@
 	};
 	const eval_functions = (name, args) => {
     	const fn = options.functions[name];
-    	if (!options.functions_order.includes(name)) options.functions_order.push(name);
         return typeof fn === "function" ? fn.apply(fn, args) : 0;
     };
     const eval_identifiers = (name) => {
