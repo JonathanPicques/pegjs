@@ -8,7 +8,18 @@
 	options.identifiers_order = [];
 
 	const unary_operation = (head, tail) => {
-		return eval(`${head}${typeof tail === "string" ? `"${tail}"` : tail}`)
+		return head.reverse().reduce((a, op) => {
+			switch (op) {
+				case "~":
+					return ~a;
+				case "!":
+					return !a;
+				case "+":
+					return +a;
+				case "-":
+					return -a;
+			}
+		}, tail);
 	};
 	const binary_operation = (head, tail) => {
 		return tail.reduce((a, op) => {

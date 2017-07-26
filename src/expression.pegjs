@@ -13,13 +13,13 @@ EndExpression
 
 UnaryExpression
 	= EndExpression
-	/ head:$UnaryOperator* __ tail:EndExpression { return unary_operation(head, tail); }
+	/ head:UnaryOperator* __ tail:EndExpression { return unary_operation(head, tail); }
 
 UnaryOperator
-	= $("+" !"=")
-	/ $("-" !"=")
-	/ $"~"+
-	/ $"!"+
+	= $("+" !"+")
+	/ $("-" !"-")
+	/ $"~"
+	/ $"!"
 
 ExponentiationExpression
 	= head:UnaryExpression tail:(__ ExponentiationOperator __ UnaryExpression)* { return binary_operation(head, tail); }
@@ -31,9 +31,9 @@ MultiplicativeExpression
 	= head:ExponentiationExpression tail:(__ MultiplicativeOperator __ ExponentiationExpression)* { return binary_operation(head, tail); }
 
 MultiplicativeOperator
-	= $("*" !"*" !"=")
-	/ $("/" !"=")
-	/ $("%" !"=")
+	= $("*" !"*")
+	/ $("/")
+	/ $("%")
 
 AdditiveExpression
 	= head:MultiplicativeExpression tail:(__ AdditiveOperator __ MultiplicativeExpression)* { return binary_operation(head, tail); }
@@ -55,9 +55,9 @@ BitwiseShiftExpression
 	= head:AdditiveExpression tail:(__ BitwiseShiftOperator __ AdditiveExpression)* { return binary_operation(head, tail); }
 
 BitwiseShiftOperator
-	= $("<<"  !"=")
-	/ $(">>>" !"=")
-	/ $(">>"  !"=")
+	= $("<<" )
+	/ $(">>>")
+	/ $(">>" )
 
 RelationalExpression
 	= head:BitwiseShiftExpression tail:(__ RelationalOperator __ BitwiseShiftExpression)* { return binary_operation(head, tail); }
