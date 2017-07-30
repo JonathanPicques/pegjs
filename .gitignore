@@ -1,6 +1,9 @@
 # IntelliJ project folder
-.idea/
+/.idea/
 
 # Grammar generator
 compile.js
 compile.pegjs
+
+# Node modules
+/node_modules/
