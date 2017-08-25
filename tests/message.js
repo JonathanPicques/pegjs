@@ -21,10 +21,10 @@ const parser = peg.generate(`
 
 describe("test message", () => {
     it("should read a single message", () => {
-        expect(parser.parse(`Jonathan : "Bonjour Vincent"`)[0]).to.be.eql({"author": "Jonathan", "content": "Bonjour Vincent"});
-        expect(parser.parse(`Jonathan : 'Bonjour Vincent'`)[0]).to.be.eql({"author": "Jonathan", "content": "Bonjour Vincent"});
-        expect(parser.parse(`'Jonathan' : "Bonjour Vincent"`)[0]).to.be.eql({"author": "Jonathan", "content": "Bonjour Vincent"});
-        expect(parser.parse(`'Jon' + 'athan':'Bonjour Vincent'`)[0]).to.be.eql({"author": "Jonathan", "content": "Bonjour Vincent"});
+        expect(parser.parse(`Jonathan : "Bonjour Vincent"`)[0]).to.be.eql({"character": "Jonathan", "content": "Bonjour Vincent"});
+        expect(parser.parse(`Jonathan : 'Bonjour Vincent'`)[0]).to.be.eql({"character": "Jonathan", "content": "Bonjour Vincent"});
+        expect(parser.parse(`'Jonathan' : "Bonjour Vincent"`)[0]).to.be.eql({"character": "Jonathan", "content": "Bonjour Vincent"});
+        expect(parser.parse(`'Jon' + 'athan':'Bonjour Vincent'`)[0]).to.be.eql({"character": "Jonathan", "content": "Bonjour Vincent"});
 
         expect(() => parser.parse(":")).to.throw();
         expect(() => parser.parse("a:")).to.throw();
@@ -32,6 +32,6 @@ describe("test message", () => {
         expect(() => parser.parse("a::a")).to.throw();
     });
     it("should test string coercion", () => {
-        expect(parser.parse(`32 + 32 : true ? false : true`)[0]).to.be.eql({"author": "64", "content": "false"});
+        expect(parser.parse(`32 + 32 : true ? false : true`)[0]).to.be.eql({"character": "64", "content": "false"});
     });
 });

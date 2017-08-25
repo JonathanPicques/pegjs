@@ -2,16 +2,16 @@
 // Message //
 /////////////
 
-Messages "messages"
+Messages "Messages"
 	= messages:(Message __ UnicodeLineTerminatorSequence*)* { return messages.map(m => m[0]); }
 
-Message "message"
-	= author:MessageAuthor __ ":" __ content:MessageContent { return {author, content}; }
+Message "Message"
+	= character:MessageCharacter __ ":" __ content:MessageContent { return {character, content}; }
 
-MessageAuthor "message author"
+MessageCharacter "Message character"
 	= $Identifier
 	/ expression:Expression { return "" + expression; }
 
-MessageContent "message content"
+MessageContent "Message content"
 	= $Identifier
 	/ expression:Expression { return "" + expression; }
