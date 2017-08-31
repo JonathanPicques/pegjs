@@ -83,7 +83,7 @@ describe("test function", () => {
         expect(parser.parse("math_pow(2, 6)")).to.be.equal(Math.pow(2, 6));
         expect(parser.parse("math_sin(32)")).to.be.equal(Math.sin(32));
 
-        expect(parser.parse("math_unknown(32)")).to.be.equal(0);
+        expect(parser.parse("math_unknown(32)")).to.be.equal(null);
     });
     it("should test custom functions", () => {
         // noinspection NonAsciiCharacters
@@ -101,25 +101,25 @@ describe("test function", () => {
 });
 describe("test identifier", () => {
     it("should test basic identifiers", () => {
-        expect(parser.parse("___$$$____")).to.be.equal(0);
-        expect(parser.parse("$line$")).to.be.equal(0);
-        expect(parser.parse("__dirname")).to.be.equal(0);
-        expect(parser.parse("koala")).to.be.equal(0);
-        expect(parser.parse("_ident900")).to.be.equal(0);
-        expect(parser.parse("trues")).to.be.equal(0);
-        expect(parser.parse("nulled")).to.be.equal(0);
-        expect(parser.parse("falsefalse")).to.be.equal(0);
-        expect(parser.parse("ffalse")).to.be.equal(0);
-        expect(parser.parse("accentué")).to.be.equal(0);
-        expect(parser.parse("âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ_12__")).to.be.equal(0);
-        expect(parser.parse("_ä_ë__$$__k_")).to.be.equal(0);
+        expect(parser.parse("___$$$____")).to.be.equal(null);
+        expect(parser.parse("$line$")).to.be.equal(null);
+        expect(parser.parse("__dirname")).to.be.equal(null);
+        expect(parser.parse("koala")).to.be.equal(null);
+        expect(parser.parse("_ident900")).to.be.equal(null);
+        expect(parser.parse("trues")).to.be.equal(null);
+        expect(parser.parse("nulled")).to.be.equal(null);
+        expect(parser.parse("falsefalse")).to.be.equal(null);
+        expect(parser.parse("ffalse")).to.be.equal(null);
+        expect(parser.parse("accentué")).to.be.equal(null);
+        expect(parser.parse("âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ_12__")).to.be.equal(null);
+        expect(parser.parse("_ä_ë__$$__k_")).to.be.equal(null);
 
         expect(() => parser.parse("9true")).to.throw();
     });
     it("should test default math identifiers", () => {
         expect(parser.parse("math_PI")).to.be.equal(Math.PI);
         expect(parser.parse("math_E")).to.be.equal(Math.E);
-        expect(parser.parse("math_Unknown")).to.be.equal(0);
+        expect(parser.parse("math_Unknown")).to.be.equal(null);
     });
     it("should test custom identifiers", () => {
         // noinspection NonAsciiCharacters

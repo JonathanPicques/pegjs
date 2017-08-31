@@ -75,13 +75,13 @@
 	};
 	const eval_function = (name, args) => {
 		const fn = options.functions[name];
-		return typeof fn === "function" ? fn.apply(fn, args) : 0;
+		return typeof fn === "function" ? fn.apply(fn, args) : null;
 	};
 	const eval_identifier = (name) => {
 		const id = options.identifiers[name];
 		if (typeof id === "undefined" && !options.identifiers_order.includes(name)) {
 			options.identifiers_order.push(name);
 		}
-		return typeof id !== "undefined" ? id : 0;
+		return typeof id !== "undefined" ? id : null;
 	};
 }
