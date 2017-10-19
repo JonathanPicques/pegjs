@@ -243,6 +243,15 @@ describe("test expression", () => {
 
         expect(() => parser.parse("0 ? : false")).to.throw();
     });
+    it("should test nested conditional expressions", () => {
+        const options = {
+            "identifiers": {
+                "a": 1,
+                "b": 0
+            }
+        };
+        expect(parser.parse("a ? (b ? 32 : (64 > 2) ? 'success' : 'failure') : 128", options)).to.be.equal("success");
+    });
 });
 describe("test expression precedence", () => {
     it("should multiply before adding", () => {
