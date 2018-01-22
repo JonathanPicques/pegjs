@@ -85,6 +85,16 @@ describe("test function", () => {
 
         expect(parser.parse("math_unknown(32)")).to.be.equal(null);
     });
+    it("should test default number functions", () => {
+        expect(parser.parse("number_parseFloat('34.8__hello')")).to.be.equal(Number.parseFloat("34.8__hello"));
+
+        expect(parser.parse("number_unknown(32)")).to.be.equal(null);
+    });
+    it("should test default string functions", () => {
+        expect(parser.parse("string_replace('hello dear friend', 'friend', 'love')")).to.be.equal("hello dear love");
+
+        expect(parser.parse("string_unknown(32)")).to.be.equal(null);
+    });
     it("should test custom functions", () => {
         // noinspection NonAsciiCharacters
         const options = {
