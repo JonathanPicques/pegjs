@@ -67,8 +67,10 @@
 				case "|" :
 					return a | op[3];
 				case "&&" :
+				case "AND" :
 					return a && op[3];
 				case "||" :
+				case "OR" :
 					return a || op[3];
 			}
 		}, head);

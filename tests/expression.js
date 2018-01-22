@@ -115,6 +115,8 @@ describe("test identifier", () => {
         expect(parser.parse("_ä_ë__$$__k_")).to.be.equal(null);
 
         expect(() => parser.parse("9true")).to.throw();
+        expect(() => parser.parse("AND")).to.throw();
+        expect(() => parser.parse("OR")).to.throw();
     });
     it("should test default math identifiers", () => {
         expect(parser.parse("math_PI")).to.be.equal(Math.PI);
@@ -228,13 +230,20 @@ describe("test expression", () => {
         expect(parser.parse("128 && false")).to.be.equal(128 && false);
         expect(parser.parse("'true' || 'false'")).to.be.equal('true' || 'false');
 
+        expect(parser.parse("128 AND false")).to.be.equal(128 && false);
+        expect(parser.parse("'true' OR 'false'")).to.be.equal('true' || 'false');
+
         expect(() => parser.parse("10 &&& 10")).to.throw();
         expect(() => parser.parse("10 ||| 10")).to.throw();
+
+        expect(() => parser.parse("10 + AND")).to.throw();
+        expect(() => parser.parse("10 + OR")).to.throw();
     });
     it("should test conditional expressions", () => {
         expect(parser.parse("123 ? 'false' : 12")).to.be.equal(123 ? 'false' : 12);
         expect(parser.parse("123? 'false' :12")).to.be.equal(123 ? 'false' : 12);
         expect(parser.parse("1 ? 0 ? 1 : 2 : 0x43")).to.be.equal(1 ? 0 ? 1 : 2 : 0x43);
+        expect(parser.parse("6 > 5 ? 'him' : 'me'")).to.be.equal((6 > 5) ? 'him' : 'me');
 
         expect(parser.parse("19 ?: 10")).to.be.equal(19);
         expect(parser.parse("0 ?: 10")).to.be.equal(10);
@@ -251,6 +260,7 @@ describe("test expression", () => {
             }
         };
         expect(parser.parse("a ? (b ? 32 : (64 > 2) ? 'success' : 'failure') : 128", options)).to.be.equal("success");
+        expect(parser.parse("a ? b ? 32 : 64 > 2 ? 'success' : 'failure' : 128", options)).to.be.equal("success");
     });
 });
 describe("test expression precedence", () => {

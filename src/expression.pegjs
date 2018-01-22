@@ -90,13 +90,13 @@ LogicalAndExpression
 	= head:BitwiseOrExpression tail:(__ LogicalAndOperator __ BitwiseOrExpression)* { return binary_operation(head, tail); }
 
 LogicalAndOperator
-	= "&&"
+	= "&&" / "AND"
 
 LogicalOrExpression
 	= head:LogicalAndExpression tail:(__ LogicalOrOperator __ LogicalAndExpression)* { return binary_operation(head, tail); }
 
 LogicalOrOperator
-	= "||"
+	= "||" / "OR"
 
 ConditionalExpression
 	= conditional:LogicalOrExpression __ "?" __ truthy:ConditionalExpression __ ":" __ falsy:ConditionalExpression { return !!conditional ? truthy : falsy; }
@@ -135,6 +135,8 @@ IdentifierPart
 IdentifierReserved
 	= NullLiteral
 	/ BooleanLiteral
+	/ "AND"
+	/ "OR"
 
 //////////////
 // Literals //
