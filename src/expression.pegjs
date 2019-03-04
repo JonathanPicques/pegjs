@@ -144,9 +144,9 @@ IdentifierReserved
 
 Literal
 	= NullLiteral
-	/ BooleanLiteral
-	/ NumericLiteral
+	/ NumberLiteral
 	/ StringLiteral
+	/ BooleanLiteral
 
 NullLiteral "null"
 	= NullLiteralToken { return null; }
@@ -154,25 +154,23 @@ NullLiteral "null"
 NullLiteralToken
 	= "null" !IdentifierPart
 
-BooleanLiteral "boolean"
-	= TrueLiteralToken { return true; }
-	/ FalseLiteralToken { return false; }
 
-TrueLiteralToken
-	= "true" !IdentifierPart
-
-FalseLiteralToken
-	= "false" !IdentifierPart
-
-NumericLiteral "number"
-	= HexadecimalLiteral
+NumberLiteral "number"
+	= HexaLiteral
+	/ BinaryLiteral
 	/ DecimalLiteral
 
-HexadecimalLiteral
-	= "0x"i digits:$HexadecimalDigit+ { return parseInt(digits, 16); }
+HexaLiteral
+	= "0x"i digits:$HexaDigit+ { return parseInt(digits, 16); }
 
-HexadecimalDigit
+HexaDigit
 	= [0-9a-f]i
+
+BinaryLiteral
+	= "0b"i digits:$BinaryDigit+ { return parseInt(digits, 2); }
+
+BinaryDigit
+	= [01]
 
 DecimalLiteral
 	= DecimalSeparator DecimalDigit+ DecimalLiteralExponentialPart? { return parseFloat(text(), 10); }
@@ -190,6 +188,16 @@ DecimalLiteralExponentialPart
 
 ExponentialLiteralToken
     = "e"i
+
+BooleanLiteral "boolean"
+	= TrueLiteralToken { return true; }
+	/ FalseLiteralToken { return false; }
+
+TrueLiteralToken
+	= "true" !IdentifierPart
+
+FalseLiteralToken
+	= "false" !IdentifierPart
 
 StringLiteral "string"
 	= '"' chars:DoubleStringCharacter* '"' { return chars.join(""); }
@@ -246,10 +254,10 @@ EscapeCharacter
 	/ "u"
 
 HexEscapeSequence
-	= "x" digits:$(HexadecimalDigit HexadecimalDigit) { return String.fromCharCode(parseInt(digits, 16)); }
+	= "x" digits:$(HexaDigit HexaDigit) { return String.fromCharCode(parseInt(digits, 16)); }
 
 UnicodeEscapeSequence
-	= "u" digits:$(HexadecimalDigit HexadecimalDigit HexadecimalDigit HexadecimalDigit) { return String.fromCharCode(parseInt(digits, 16)); }
+	= "u" digits:$(HexaDigit HexaDigit HexaDigit HexaDigit) { return String.fromCharCode(parseInt(digits, 16)); }
 
 Character
 	= .

@@ -36,14 +36,24 @@ describe("test literal", () => {
         expect(parser.parse("100e10")).to.be.equal(100e10);
         expect(parser.parse("100E10")).to.be.equal(100E10);
 
+        expect(parser.parse("0b0")).to.be.equal(0b0);
+        expect(parser.parse("0b111")).to.be.equal(0b111);
+        expect(parser.parse("0b0011")).to.be.equal(0b0011);
+
         expect(parser.parse("0.0")).to.be.equal(0.0);
         expect(parser.parse("0.1")).to.be.equal(0.1);
         expect(parser.parse(".1")).to.be.equal(.1);
         expect(parser.parse("324.01")).to.be.equal(324.01);
         expect(parser.parse("324.01e3")).to.be.equal(324.01e3);
 
+        expect(() => parser.parse("0b")).to.throw();
+        expect(() => parser.parse("0b2")).to.throw();
+        expect(() => parser.parse("0b1e3")).to.throw();
         expect(() => parser.parse("..3")).to.throw();
         expect(() => parser.parse("1.3.4")).to.throw();
+        expect(() => parser.parse("12e")).to.throw();
+        expect(() => parser.parse("12e0b1")).to.throw();
+        expect(() => parser.parse("12e0x1")).to.throw();
         expect(() => parser.parse("0x23.5")).to.throw();
     });
     it("should test strings", () => {
@@ -234,6 +244,9 @@ describe("test expression", () => {
         expect(parser.parse("0x0011 ^ 0x0111")).to.be.equal(0x0011 ^ 0x0111);
         expect(parser.parse("0x0011 | 0x0111")).to.be.equal(0x0011 | 0x0111);
 
+        expect(parser.parse("0b0011 & 0b1100")).to.be.equal(0b0011 & 0b1100);
+        expect(parser.parse("0b0011 | 0b1100")).to.be.equal(0b0011 | 0b1100);
+
         expect(() => parser.parse("10 ^^ 10")).to.throw();
     });
     it("should test logical expressions", () => {
@@ -287,6 +300,14 @@ describe("test expression precedence", () => {
     it("should test bitwise and logical precedence", () => {
         expect(parser.parse("12 | 43 & 36")).to.be.equal(12 | 43 & 36);
         expect(parser.parse("12 || 43 && 36")).to.be.equal(12 || 43 && 36);
+    });
+    it("should follow natural order between same precedence", () => {
+        expect(parser.parse("12 * 3 / 45 % 7")).to.be.equal(12 * 3 / 45 % 7);
+        expect(parser.parse("12 * 3 % 45 / 7")).to.be.equal(12 * 3 % 45 / 7);
+        expect(parser.parse("12 / 3 * 45 % 7")).to.be.equal(12 / 3 * 45 % 7);
+        expect(parser.parse("12 / 3 % 45 * 7")).to.be.equal(12 / 3 % 45 * 7);
+        expect(parser.parse("12 % 3 * 45 / 7")).to.be.equal(12 % 3 * 45 / 7);
+        expect(parser.parse("12 % 3 / 45 * 7")).to.be.equal(12 % 3 / 45 * 7);
     });
 });
 describe("test complex expression", () => {
