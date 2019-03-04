@@ -9,7 +9,7 @@ Defines
 - ```Expression```
 - ```Identifier```
 - ```Function```
-- ```Literal``` (```NullLiteral``` / ```NumberLiteral``` / ```StringLiteral```)
+- ```Literal``` (```NullLiteral``` / ```NumberLiteral``` / ```StringLiteral``` / ```BooleanLiteral```)
 
 Operation precedence
 ---
