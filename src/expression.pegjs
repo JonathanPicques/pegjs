@@ -7,13 +7,21 @@ Expression
 
 EndExpression
 	= "(" __ expression:ConditionalExpression __ ")" { return expression; }
+	/ Literal
 	/ Function
 	/ Identifier
-	/ Literal
+
+PropertyAccessorKey
+	= "." __ key:IdentifierName { return key; }
+    / "[" __ key:(EndExpression) __ "]" { return key; }
+
+PropertyAccessorExpression
+	= property:EndExpression keys:PropertyAccessorKey+ { return keys.reduce((a, key) => a[key], property); }
+	/ EndExpression
 
 UnaryExpression
-	= EndExpression
-	/ head:UnaryOperator* __ tail:EndExpression { return unary_operation(head, tail); }
+	= PropertyAccessorExpression
+	/ head:UnaryOperator* __ tail:PropertyAccessorExpression { return unary_operation(head, tail); }
 
 UnaryOperator
 	= $("+" !"+")
@@ -144,6 +152,8 @@ IdentifierReserved
 
 Literal
 	= NullLiteral
+	/ ArrayLiteral
+	/ ObjectLiteral
 	/ NumberLiteral
 	/ StringLiteral
 	/ BooleanLiteral
@@ -154,6 +164,20 @@ NullLiteral "null"
 NullLiteralToken
 	= "null" !IdentifierPart
 
+ArrayLiteral "array"
+	= "[" __ values: (Literal ","? __)* __ "]" { return values.map(v => v[0]); }
+
+ObjectLiteral "object"
+	= "{" __ entries:(ObjectKeyValue ","? __)* "}" { return entries.reduce((a, op) => Object.assign(a, op[0]), {}); }
+    
+ObjectKey
+	= IdentifierName / NullLiteral / StringLiteral / BooleanLiteral
+
+ObjectValue
+	= Literal
+
+ObjectKeyValue
+	= __ key:ObjectKey __ ":" __ value:Literal __ { return {[key]: value} }
 
 NumberLiteral "number"
 	= HexaLiteral

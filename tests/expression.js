@@ -21,9 +21,14 @@ describe("test literal", () => {
     it("should test null", () => {
         expect(parser.parse("null")).to.be.equal(null);
     });
-    it("should test booleans", () => {
-        expect(parser.parse("true")).to.be.equal(true);
-        expect(parser.parse("false")).to.be.equal(false);
+    it("should test arrays", () => {
+        expect(parser.parse("[]")).to.be.eql([]);
+        expect(parser.parse("[1, 2, 'false']")).to.be.eql([1, 2, 'false']);
+    });
+    it("should test objects", () => {
+        expect(parser.parse("{}")).to.be.eql({});
+        expect(parser.parse("{a: 'a'}")).to.be.eql({a: 'a'});
+        expect(parser.parse("{'a': 'a'}")).to.be.eql({'a': 'a'});
     });
     it("should test numbers", () => {
         expect(parser.parse("0x123")).to.be.equal(0x123);
@@ -74,6 +79,10 @@ describe("test literal", () => {
         expect(() => parser.parse(`"superb string'`)).to.throw();
         expect(() => parser.parse(`"superb string`)).to.throw();
         expect(() => parser.parse(`superb string"`)).to.throw();
+    });
+    it("should test booleans", () => {
+        expect(parser.parse("true")).to.be.equal(true);
+        expect(parser.parse("false")).to.be.equal(false);
     });
 });
 describe("test function", () => {
@@ -285,6 +294,24 @@ describe("test expression", () => {
         expect(parser.parse("a ? (b ? 32 : (64 > 2) ? 'success' : 'failure') : 128", options)).to.be.equal("success");
         expect(parser.parse("a ? b ? 32 : 64 > 2 ? 'success' : 'failure' : 128", options)).to.be.equal("success");
     });
+    it("should test property accessors", () => {
+        const options = {
+            "identifiers": {
+                "a": [1, 2, 3],
+                "b": {
+                    inner: [1, {sub: 'yes'}, 3]
+                },
+                "c": [[], [[20, 40], [20, {sub: 42}]], {}]
+            }
+        };
+        expect(parser.parse("a[2]", options)).to.be.equal(3);
+        expect(parser.parse("b.inner[0]", options)).to.be.equal(1);
+        expect(parser.parse("b['inner'][0]", options)).to.be.equal(1);
+        expect(parser.parse("b['inner'][1].sub", options)).to.be.equal('yes');
+        expect(parser.parse("c[1][1][1].sub", options)).to.be.equal(42);
+
+        expect(parser.parse("[[[{o: [[[true]]]}]]][0][0][0].o[0][0][0]", options)).to.be.equal(true);
+    });
 });
 describe("test expression precedence", () => {
     it("should multiply before adding", () => {
@@ -309,11 +336,17 @@ describe("test expression precedence", () => {
         expect(parser.parse("12 % 3 * 45 / 7")).to.be.equal(12 % 3 * 45 / 7);
         expect(parser.parse("12 % 3 / 45 * 7")).to.be.equal(12 % 3 / 45 * 7);
     });
+    it("should access property before adding or multiplying", () => {
+        const options = {
+            "identifiers": {
+                "a": {a: [[5]]},
+            }
+        };
+        expect(parser.parse("3 * a.a[0][0] + 5 * 10", options)).to.be.equal(65);
+    });
 });
 describe("test complex expression", () => {
     it("should test complex expressions", () => {
-        // noinspection PointlessArithmeticExpressionJS
-        expect(parser.parse("((((((((32 * 2)))))))) * 1 + 1")).to.be.equal(((((((((32 * 2)))))))) * 1 + 1);
         // noinspection ConstantConditionalExpressionJS
         expect(parser.parse("1 - -(-true ? (32 * ((34 + 10) - +10) & 32 | 78) : 24 ^ 321)")).to.be.equal(1 - -(-true ? (32 * ((34 + 10) - +10) & 32 | 78) : 24 ^ 321));
     });
