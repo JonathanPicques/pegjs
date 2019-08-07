@@ -11,13 +11,16 @@ EndExpression
 	/ Function
 	/ Identifier
 
+TrimmedExpression
+	= __ expression:EndExpression __ { return expression; }
+
 PropertyAccessorKey
 	= "." __ key:IdentifierName { return key; }
-    / "[" __ key:(EndExpression) __ "]" { return key; }
+    / "[" __ key:TrimmedExpression __ "]" { return key; }
 
 PropertyAccessorExpression
-	= property:EndExpression keys:PropertyAccessorKey+ { return keys.reduce((a, key) => a[key], property); }
-	/ EndExpression
+	= property:TrimmedExpression keys:PropertyAccessorKey+ { return keys.reduce((a, key) => a[key], property); }
+	/ TrimmedExpression
 
 UnaryExpression
 	= PropertyAccessorExpression
@@ -116,7 +119,7 @@ ConditionalExpression
 ///////////////
 
 Function
-	= name:IdentifierName "(" __ args:FunctionArguments? __ ")" { return eval_function(name, args); }
+	= name:IdentifierName __ "(" __ args:FunctionArguments? __ ")" { return eval_function(name, args); }
 
 FunctionArguments
 	= expression:Expression expressions:(__ "," __ Expression __ )* { return [expression, ...expressions.map(e => e[3])]; }

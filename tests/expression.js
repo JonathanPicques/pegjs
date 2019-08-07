@@ -125,6 +125,9 @@ describe("test function", () => {
         expect(parser.parse("custom_double(32)", options)).to.be.equal(64);
         expect(parser.parse("âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ(32)", options)).to.be.equal(96);
 
+        expect(parser.parse("   custom_double(32)  ", options)).to.be.equal(64);
+        expect(parser.parse("  âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ   (  32 )  ", options)).to.be.equal(96);
+
         expect(() => parser.parse("9ufo(32)")).to.throw();
     });
 });
@@ -151,6 +154,10 @@ describe("test identifier", () => {
         expect(parser.parse("math_PI")).to.be.equal(Math.PI);
         expect(parser.parse("math_E")).to.be.equal(Math.E);
         expect(parser.parse("math_Unknown")).to.be.equal(null);
+
+        expect(parser.parse("   math_PI")).to.be.equal(Math.PI);
+        expect(parser.parse("       math_E  ")).to.be.equal(Math.E);
+        expect(parser.parse("  math_Unknown")).to.be.equal(null);
     });
     it("should test custom identifiers", () => {
         // noinspection NonAsciiCharacters
@@ -162,6 +169,9 @@ describe("test identifier", () => {
         };
         expect(parser.parse("custom_id", options)).to.be.equal(0xDEAD);
         expect(parser.parse("âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ", options)).to.be.equal(0xDEAD);
+
+        expect(parser.parse(" custom_id  ", options)).to.be.equal(0xDEAD);
+        expect(parser.parse("   âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ    ", options)).to.be.equal(0xDEAD);
     });
 });
 describe("test identifier order", () => {
@@ -348,6 +358,6 @@ describe("test expression precedence", () => {
 describe("test complex expression", () => {
     it("should test complex expressions", () => {
         // noinspection ConstantConditionalExpressionJS
-        expect(parser.parse("1 - -(-true ? (32 * ((34 + 10) - +10) & 32 | 78) : 24 ^ 321)")).to.be.equal(1 - -(-true ? (32 * ((34 + 10) - +10) & 32 | 78) : 24 ^ 321));
+        expect(parser.parse("1 -  -(- true ? (32 * ((34 + 10) - + 10) & 32 | 78) : 24 ^  321    )")).to.be.equal(1 -  -(- true ? (32 * ((34 + 10) - + 10) & 32 | 78) : 24 ^  321    ));
     });
 });
