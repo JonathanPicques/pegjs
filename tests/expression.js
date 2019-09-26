@@ -304,6 +304,54 @@ describe('test expression', () => {
         expect(parser.parse("a ? (b ? 32 : (64 > 2) ? 'success' : 'failure') : 128", options)).to.be.equal('success');
         expect(parser.parse("a ? b ? 32 : 64 > 2 ? 'success' : 'failure' : 128", options)).to.be.equal('success');
     });
+    it('should test expressions with math and custom identifiers', () => {
+        const options = {
+            identifiers: {
+                number: 42,
+                a: 1,
+                b: 2,
+                c: 3,
+                d: 4, 
+                e: 5, 
+                f: 6,
+            },
+        };
+        expect(parser.parse('number + 10', options)).to.be.equal(52);
+        expect(parser.parse('10 + number', options)).to.be.equal(52);
+        expect(parser.parse('number > 10 ? 10 : 20', options)).to.be.equal(10);
+        expect(parser.parse('number < 10 ? 10 : 20', options)).to.be.equal(20);
+        expect(parser.parse('10 < number ? 10 : 20', options)).to.be.equal(10);
+        expect(parser.parse('10 > number ? 10 : 20', options)).to.be.equal(20);
+        expect(parser.parse('number > 10 ? 10 + number : 20 + number', options)).to.be.equal(52);
+        expect(parser.parse('number < 10 ? 10 + number : 20 + number', options)).to.be.equal(62);
+        expect(parser.parse('number > 10 ? number + 10 : number + 20', options)).to.be.equal(52);
+        expect(parser.parse('number < 10 ? number + 10 : number + 20', options)).to.be.equal(62);
+        expect(parser.parse('number / math_PI * 5', options)).to.be.equal(42 / Math.PI * 5);
+        expect(parser.parse('math_PI / number * 5', options)).to.be.equal(Math.PI / 42 * 5);
+        expect(parser.parse('a > b ? d + e + f > 0 : a + b + 1', options)).to.be.equal(4);
+        expect(parser.parse('(a > b) ? (d + e + f > 0) : (a + b + 1)', options)).to.be.equal(4);
+    });
+    // it('should test conditional expressions and identifier lazy resolution', () => {
+    //     const options = {
+    //         identifiers: new Proxy({
+    //             valid_id: 42,
+    //             invalid_id: 0xdead,
+    //         }, {
+    //             get(target, property, receiver) {
+    //                 if (property === 'invalid_id') {
+    //                     throw new Error('Cannot get invalid id');
+    //                 }
+    //                 return Reflect.get(target, property, receiver);
+    //             }
+    //         }),
+    //     };
+    //     expect(parser.parse('valid_id', options)).to.be.equal(42);
+    //     expect(() => parser.parse('invalid_id', options)).to.throw();
+    //     expect(parser.parse('true ? valid_id : invalid_id', options)).to.be.equal(42);
+    //     expect(() => parser.parse('true ? invalid_id : valid_id', options)).to.throw();
+    //     expect(parser.parse('true ? valid_id + 10 : invalid_id - 10', options)).to.be.equal(52);
+    //     expect(() => parser.parse('false ? valid_id + 10 : invalid_id - 10', options)).to.throw();
+    // });
     it('should test property accessors', () => {
         const options = {
             identifiers: {
