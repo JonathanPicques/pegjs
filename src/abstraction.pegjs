@@ -10,82 +10,113 @@
 	options.identifiers_order = [];
 
 	const unary_operation = (head, tail) => {
-		return head.reverse().reduce((a, op) => {
-			switch (op) {
-				case "~":
-					return ~a;
-				case "!":
-					return !a;
-				case "+":
-					return +a;
-				case "-":
-					return -a;
-			}
-		}, tail);
+		return {type: 'unary', head: head.map(operator => ({operator})), tail};
 	};
 	const binary_operation = (head, tail) => {
-		return tail.reduce((a, op) => {
-			switch (op[1]) {
-				case "**" :
-					return Math.pow(a, op[3]);
-				case "*" :
-					return a * op[3];
-				case "/" :
-					return a / op[3];
-				case "%" :
-					return a % op[3];
-				case "+" :
-					return a + op[3];
-				case "-" :
-					return a - op[3];
-				case "<<" :
-					return a << op[3];
-				case ">>" :
-					return a >> op[3];
-				case ">>>" :
-					return a >>> op[3];
-				case "<" :
-					return a < op[3];
-				case "<=" :
-					return a <= op[3];
-				case ">" :
-					return a > op[3];
-				case ">=" :
-					return a >= op[3];
-				case "==" :
-					// noinspection EqualityComparisonWithCoercionJS
-					return a == op[3];
-				case "!=" :
-					// noinspection EqualityComparisonWithCoercionJS
-					return a != op[3];
-				case "===" :
-					return a === op[3];
-				case "!==" :
-					return a !== op[3];
-				case "&" :
-					return a & op[3];
-				case "^" :
-					return a ^ op[3];
-				case "|" :
-					return a | op[3];
-				case "&&" :
-				case "AND" :
-					return a && op[3];
-				case "||" :
-				case "OR" :
-					return a || op[3];
+		return {type: 'binary', head, tail: tail.map(t => ({operand: t[3], operator: t[1]}))};
+	};
+	const eval_expression = data => {
+		switch (data.type) {
+			case 'unary': {
+				const tail = eval_expression(data.tail);
+				return data.head.reverse().reduce((a, op) => {
+					switch (op.operator) {
+						case '~':
+							return ~a;
+						case '!':
+							return !a;
+						case '+':
+							return +a;
+						case '-':
+							return -a;
+						default:
+							return a;
+					}
+				}, tail);
 			}
-		}, head);
-	};
-	const eval_function = (name, args) => {
-		const fn = options.functions[name];
-		return typeof fn === "function" ? fn.apply(fn, args) : null;
-	};
-	const eval_identifier = (name) => {
-		const id = options.identifiers[name];
-		if (typeof id === "undefined" && !options.identifiers_order.includes(name)) {
-			options.identifiers_order.push(name);
+			case 'binary': {
+				const head = eval_expression(data.head);
+				return data.tail.reduce((a, op) => {
+					const operand = eval_expression(op.operand);
+					switch (op.operator) {
+						case '**':
+							return Math.pow(a, operand);
+						case '*':
+							return a * operand;
+						case '/':
+							return a / operand;
+						case '%':
+							return a % operand;
+						case '+':
+							return a + operand;
+						case '-':
+							return a - operand;
+						case '<<':
+							return a << operand;
+						case '>>':
+							return a >> operand;
+						case '>>>':
+							return a >>> operand;
+						case '<':
+							return a < operand;
+						case '<=':
+							return a <= operand;
+						case '>':
+							return a > operand;
+						case '>=':
+							return a >= operand;
+						case '==':
+							// noinspection EqualityComparisonWithCoercionJS
+							return a == operand;
+						case '!=':
+							// noinspection EqualityComparisonWithCoercionJS
+							return a != operand;
+						case '===':
+							return a === operand;
+						case '!==':
+							return a !== operand;
+						case '&':
+							return a & operand;
+						case '^':
+							return a ^ operand;
+						case '|':
+							return a | operand;
+						case '&&':
+						case 'AND':
+							return a && operand;
+						case '||':
+						case 'OR':
+							return a || operand;
+						default:
+							return a;
+					}
+				}, head);
+			}
+			case 'accessor': {
+            	return data.keys.reduce((a, key) => a[typeof key === 'string'? key : eval_expression(key)], eval_expression(data.property));
+            }
+			case 'function': {
+				const fn = options.functions[data.name];
+				return typeof fn === 'function' ? fn.apply(fn, data.args) : null;
+			}
+			case 'identifier': {
+				return options.identifiers[data.name] || null;
+			}
+			case 'conditional': {
+				const condition = eval_expression(data.value);
+				return eval_expression(condition ? data.truthy : data.falsy);
+			}
+			case 'literal': {
+				return data.value;
+			}
+			case 'array_literal': {
+				return data.value.map(i => eval_expression(i));
+			}
+			case 'object_literal': {
+				return Object.keys(data.value).reduce((a, key) => ({...a, [key]: eval_expression(data.value[key])}), {});
+			}
+			default:
+				throw new Error();
 		}
-		return typeof id !== "undefined" ? id : null;
 	};
 }

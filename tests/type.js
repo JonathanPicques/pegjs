@@ -8,10 +8,12 @@ const it = mocha.it;
 const expect = chai.expect;
 const describe = mocha.describe;
 
+const grammar_abstraction = fs.readFileSync(path.join('src', 'abstraction.pegjs'));
 const grammar_expression = fs.readFileSync(path.join('src', 'expression.pegjs'));
 const grammar_unicode = fs.readFileSync(path.join('src', 'unicode.pegjs'));
 const grammar_type = fs.readFileSync(path.join('src', 'type.pegjs'));
 const parser = peg.generate(`
+    ${grammar_abstraction.toString()}
     ${grammar_type.toString()}
     ${grammar_expression.toString()}
     ${grammar_unicode.toString()}
@@ -59,9 +61,14 @@ describe('test type', () => {
             {name: 'Boolean', config: {}, fullname: 'Boolean', templates: []},
         ]);
     });
-    it('should read a simple type with config', () => {
+    it('should read a simple type with simple config', () => {
         expect(parser.parse(`String{value: "Hello"}`)).to.be.deep.equal([
             {name: 'String', config: {value: 'Hello'}, fullname: 'String{value: "Hello"}', templates: []},
+        ]);
+    });
+    it('should read a simple type with complex config', () => {
+        expect(parser.parse(`String{value: "Hello", values: [1, 2, 3]}`)).to.be.deep.equal([
+            {name: 'String', config: {value: 'Hello', values: [1, 2, 3]}, fullname: 'String{value: "Hello", values: [1, 2, 3]}', templates: []},
         ]);
     });
 });

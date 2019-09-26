@@ -3,7 +3,7 @@
 ////////////////
 
 Expression
-	= ConditionalExpression
+	= expression:ConditionalExpression { return eval_expression(expression); }
 
 EndExpression
 	= "(" __ expression:ConditionalExpression __ ")" { return expression; }
@@ -19,7 +19,7 @@ PropertyAccessorKey
     / "[" __ key:TrimmedExpression __ "]" { return key; }
 
 PropertyAccessorExpression
-	= property:TrimmedExpression keys:PropertyAccessorKey+ { return keys.reduce((a, key) => a[key], property); }
+	= property:TrimmedExpression keys:PropertyAccessorKey+ { return {type: 'accessor', keys, property}; }
 	/ TrimmedExpression
 
 UnaryExpression
@@ -110,8 +110,8 @@ LogicalOrOperator
 	= "||" / "OR"
 
 ConditionalExpression
-	= conditional:LogicalOrExpression __ "?" __ truthy:ConditionalExpression __ ":" __ falsy:ConditionalExpression { return !!conditional ? truthy : falsy; }
-	/ conditional:LogicalOrExpression __ "?:" falsy:ConditionalExpression { return !!conditional ? conditional : falsy; }
+	= conditional:LogicalOrExpression __ "?" __ truthy:ConditionalExpression __ ":" __ falsy:ConditionalExpression { return {type: 'conditional', value: conditional, truthy, falsy}; }
+	/ conditional:LogicalOrExpression __ "?:" __ falsy:ConditionalExpression { return {type: 'conditional', value: conditional, truthy: conditional, falsy}; }
 	/ LogicalOrExpression
 
 ///////////////
@@ -119,7 +119,7 @@ ConditionalExpression
 ///////////////
 
 Function
-	= name:IdentifierName __ "(" __ args:FunctionArguments? __ ")" { return eval_function(name, args); }
+	= name:IdentifierName __ "(" __ args:FunctionArguments? __ ")" { return {type: 'function', name, args}; }
 
 FunctionArguments
 	= expression:Expression expressions:(__ "," __ Expression __ )* { return [expression, ...expressions.map(e => e[3])]; }
@@ -129,7 +129,13 @@ FunctionArguments
 /////////////////
 
 Identifier
-	= name:IdentifierName { return eval_identifier(name); }
+	= name:IdentifierName { 
+		const id = options.identifiers[name];
+		if (typeof id === "undefined" && !options.identifiers_order.includes(name)) {
+			options.identifiers_order.push(name);
+		}
+		return {type: 'identifier', name};
+	}
 
 IdentifierName
     = !IdentifierReserved IdentifierStart+ IdentifierPart* { return text(); }
@@ -154,12 +160,12 @@ IdentifierReserved
 //////////////
 
 Literal
-	= NullLiteral
+	= value:NullLiteral { return {type: 'literal', value}; }
 	/ ArrayLiteral
 	/ ObjectLiteral
-	/ NumberLiteral
-	/ StringLiteral
-	/ BooleanLiteral
+	/ value:NumberLiteral { return {type: 'literal', value}; }
+	/ value:StringLiteral { return {type: 'literal', value}; }
+	/ value:BooleanLiteral { return {type: 'literal', value}; }
 
 NullLiteral "null"
 	= NullLiteralToken { return null; }
@@ -168,10 +174,10 @@ NullLiteralToken
 	= "null" !IdentifierPart
 
 ArrayLiteral "array"
-	= "[" __ values: (Literal ","? __)* __ "]" { return values.map(v => v[0]); }
+	= "[" __ values: (Literal ","? __)* __ "]" { return {type: 'array_literal', value: values.map(v => v[0])}; }
 
 ObjectLiteral "object"
-	= "{" __ entries:(ObjectKeyValue ","? __)* "}" { return entries.reduce((a, op) => Object.assign(a, op[0]), {}); }
+	= "{" __ entries:(ObjectKeyValue ","? __)* "}" { return {type: 'object_literal', value: entries.reduce((a, op) => Object.assign(a, op[0]), {})}; }
     
 ObjectKey
 	= IdentifierName / NullLiteral / StringLiteral / BooleanLiteral
