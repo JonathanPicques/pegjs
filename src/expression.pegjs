@@ -3,7 +3,7 @@
 ////////////////
 
 Expression
-	= expression:ConditionalExpression { return eval_expression(expression); }
+	= expression:ConditionalExpression { return eval_expression_ast(expression); }
 
 EndExpression
 	= "(" __ expression:ConditionalExpression __ ")" { return expression; }
@@ -130,8 +130,7 @@ FunctionArguments
 
 Identifier
 	= name:IdentifierName { 
-		const id = options.identifiers[name];
-		if (typeof id === "undefined" && !options.identifiers_order.includes(name)) {
+		if (!options.identifiers.hasOwnProperty(name) && !options.identifiers_order.includes(name)) {
 			options.identifiers_order.push(name);
 		}
 		return {type: 'identifier', name};

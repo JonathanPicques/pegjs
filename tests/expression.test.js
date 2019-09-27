@@ -331,27 +331,35 @@ describe('test expression', () => {
         expect(parser.parse('a > b ? d + e + f > 0 : a + b + 1', options)).to.be.equal(4);
         expect(parser.parse('(a > b) ? (d + e + f > 0) : (a + b + 1)', options)).to.be.equal(4);
     });
-    // it('should test conditional expressions and identifier lazy resolution', () => {
-    //     const options = {
-    //         identifiers: new Proxy({
-    //             valid_id: 42,
-    //             invalid_id: 0xdead,
-    //         }, {
-    //             get(target, property, receiver) {
-    //                 if (property === 'invalid_id') {
-    //                     throw new Error('Cannot get invalid id');
-    //                 }
-    //                 return Reflect.get(target, property, receiver);
-    //             }
-    //         }),
-    //     };
-    //     expect(parser.parse('valid_id', options)).to.be.equal(42);
-    //     expect(() => parser.parse('invalid_id', options)).to.throw();
-    //     expect(parser.parse('true ? valid_id : invalid_id', options)).to.be.equal(42);
-    //     expect(() => parser.parse('true ? invalid_id : valid_id', options)).to.throw();
-    //     expect(parser.parse('true ? valid_id + 10 : invalid_id - 10', options)).to.be.equal(52);
-    //     expect(() => parser.parse('false ? valid_id + 10 : invalid_id - 10', options)).to.throw();
-    // });
+    it('should test conditional expressions and identifier lazy resolution', () => {
+        const options = {
+            identifiers: new Proxy({
+                valid_id: 42,
+                invalid_id: 0xdead,
+                valid_id_obj: {test: 32},
+                invalid_id_obj: {test: 0xdead},
+            }, {
+                get(target, property, receiver) {
+                    if (property === 'invalid_id' || property === 'invalid_id_obj') {
+                        throw new Error('Cannot get invalid id');
+                    }
+                    return Reflect.get(target, property, receiver);
+                }
+            }),
+        };
+        expect(parser.parse('valid_id', options)).to.be.equal(42);
+        expect(() => parser.parse('invalid_id', options)).to.throw();
+        expect(parser.parse('true ? valid_id : invalid_id', options)).to.be.equal(42);
+        expect(() => parser.parse('true ? invalid_id : valid_id', options)).to.throw();
+        expect(parser.parse('true ? valid_id + 10 : invalid_id - 10', options)).to.be.equal(52);
+        expect(() => parser.parse('false ? valid_id + 10 : invalid_id - 10', options)).to.throw();
+        expect(parser.parse('valid_id_obj.test', options)).to.be.equal(32);
+        expect(() => parser.parse('invalid_id_obj.test', options)).to.throw();
+        expect(parser.parse('valid_id_obj.test === 32 ? valid_id_obj.test + 10 : invalid_id_obj.test + 10', options)).to.equal(42);
+        expect(() =>parser.parse('valid_id_obj.test !== 32 ? valid_id_obj.test + 10 : invalid_id_obj.test + 10', options)).to.throw();
+        expect(parser.parse('valid_id_obj.test === 32 ? 10 + valid_id_obj.test : 10 + invalid_id_obj.test', options)).to.equal(42);
+        expect(() =>parser.parse('valid_id_obj.test !== 32 ? 10 + valid_id_obj.test : 10 + invalid_id_obj.test', options)).to.throw();
+    });
     it('should test property accessors', () => {
         const options = {
             identifiers: {
