@@ -2,9 +2,6 @@
 // Type //
 //////////
 
-Type
-	= type:UnionType { return eval_expression_ast(type); }
-
 UnionType "union type"
 	= types:(__ SingleType __ "|" __)* __ type:SingleType { return {type: 'union_type', value: [...types.map(t => t[1]), type]}; }
 

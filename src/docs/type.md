@@ -5,4 +5,4 @@ Defines a grammar for parsing code types with the following format: `String{mult
 ## Defines
 
 -   `UnionType`
--   `UnaryType`
+-   `SingleType`
