@@ -1,6 +1,9 @@
 # Grammar generator
-builder.js
-expression.pegjs
+/builder.js
+/expression.pegjs
 
 # Node modules
 node_modules
+
+# Build
+/dist

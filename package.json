@@ -1,15 +1,30 @@
 {
-  "name": "pegjs",
-  "version": "1.0.0",
+  "name": "pegjs-expression-parser",
+  "version": "1.0.1",
   "description": "PEGJS libraries for common use cases",
-  "main": "tests.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "devDependencies": {
+    "@types/chai": "^4.2.3",
+    "@types/chai-as-promised": "^7.1.2",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.7.8",
+    "@types/pegjs": "^0.10.1",
     "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
     "mocha": "^6.2.0",
-    "pegjs": "^0.10.0"
+    "pegjs": "^0.10.0",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3"
   },
   "scripts": {
-    "test": "mocha tests/"
+    "test": "mocha -r ts-node/register tests/**/*.ts",
+    "build": "tsc",
+    "prepare": "npm run build",
+    "postpublish": "rm -rf dist"
   },
   "repository": {
     "type": "git",
@@ -20,5 +35,6 @@
   "bugs": {
     "url": "https://github.com/JonathanPicques/pegjs/issues"
   },
-  "homepage": "https://github.com/JonathanPicques/pegjs#readme"
+  "homepage": "https://github.com/JonathanPicques/pegjs#readme",
+  "dependencies": {}
 }
