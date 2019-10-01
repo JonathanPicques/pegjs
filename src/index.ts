@@ -220,7 +220,10 @@ export const evaluateExpression = async (expression: Expression, options: Expres
         }
         case 'identifier': {
             const identifier = options.identifiers[expression.name];
-            return (typeof identifier === 'function' ? await identifier() : identifier) || null;
+            if (typeof identifier !== 'undefined') {
+                return (typeof identifier === 'function' ? await identifier() : identifier);
+            }
+            return null;
         }
         case 'function_call': {
             const fn = options.functions[expression.name];

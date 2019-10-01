@@ -371,6 +371,12 @@ describe('test expression', () => {
         const options = {
             identifiers: new Proxy(
                 {
+                    value1a: 12,
+                    value1b: () => 12,
+                    value1c: async () => 12,
+                    value2a: 0,
+                    value2b: () => 0,
+                    value2c: async () => 0,
                     valid_id: 42,
                     invalid_id: 0xdead,
                     valid_id_obj: {test: 32},
@@ -386,6 +392,21 @@ describe('test expression', () => {
                 },
             ),
         };
+
+        expect(await parse_and_eval('value1a != 0', options)).to.be.equal(true);
+        expect(await parse_and_eval('value1b != 0', options)).to.be.equal(true);
+        expect(await parse_and_eval('value1c != 0', options)).to.be.equal(true);
+        expect(await parse_and_eval('value2a != 0', options)).to.be.equal(false);
+        expect(await parse_and_eval('value2b != 0', options)).to.be.equal(false);
+        expect(await parse_and_eval('value2c !== 0', options)).to.be.equal(false);
+
+        expect(await parse_and_eval('value1a !== 0', options)).to.be.equal(true);
+        expect(await parse_and_eval('value1b !== 0', options)).to.be.equal(true);
+        expect(await parse_and_eval('value1c !== 0', options)).to.be.equal(true);
+        expect(await parse_and_eval('value2a !== 0', options)).to.be.equal(false);
+        expect(await parse_and_eval('value2b !== 0', options)).to.be.equal(false);
+        expect(await parse_and_eval('value2c !== 0', options)).to.be.equal(false);
+
         expect(await parse_and_eval('valid_id', options)).to.be.equal(42);
         await expect(parse_and_eval('invalid_id', options)).to.be.eventually.rejectedWith(Error);
         expect(await parse_and_eval('true ? valid_id : invalid_id', options)).to.be.equal(42);
@@ -395,13 +416,9 @@ describe('test expression', () => {
         expect(await parse_and_eval('valid_id_obj.test', options)).to.be.equal(32);
         await expect(parse_and_eval('invalid_id_obj.test', options)).to.be.eventually.rejectedWith(Error);
         expect(await parse_and_eval('valid_id_obj.test === 32 ? valid_id_obj.test + 10 : invalid_id_obj.test + 10', options)).to.equal(42);
-        await expect(parse_and_eval('valid_id_obj.test !== 32 ? valid_id_obj.test + 10 : invalid_id_obj.test + 10', options)).to.be.eventually.rejectedWith(
-            Error,
-        );
+        await expect(parse_and_eval('valid_id_obj.test !== 32 ? valid_id_obj.test + 10 : invalid_id_obj.test + 10', options)).to.be.eventually.rejectedWith(Error);
         expect(await parse_and_eval('valid_id_obj.test === 32 ? 10 + valid_id_obj.test : 10 + invalid_id_obj.test', options)).to.equal(42);
-        await expect(parse_and_eval('valid_id_obj.test !== 32 ? 10 + valid_id_obj.test : 10 + invalid_id_obj.test', options)).to.be.eventually.rejectedWith(
-            Error,
-        );
+        await expect(parse_and_eval('valid_id_obj.test !== 32 ? 10 + valid_id_obj.test : 10 + invalid_id_obj.test', options)).to.be.eventually.rejectedWith(Error);
     });
     it('should test property accessors', async () => {
         const options = {

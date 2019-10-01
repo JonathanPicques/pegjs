@@ -130,7 +130,7 @@ FunctionArguments
 
 Identifier
 	= name:IdentifierName { 
-		if (!options.identifiers.hasOwnProperty(name) && !options.identifiers_order.includes(name)) {
+		if (!(name in options.identifiers) && !options.identifiers_order.includes(name)) {
 			options.identifiers_order.push(name);
 		}
 		return {type: 'identifier', name};
