@@ -178,6 +178,35 @@ describe('test identifier', () => {
         expect(await parse_and_eval(' custom_id  ', options)).to.be.equal(0xdead);
         expect(await parse_and_eval('   âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ    ', options)).to.be.equal(0xdead);
     });
+    it('should test synchronous function identifiers', async () => {
+        // noinspection NonAsciiCharacters
+        const options = {
+            identifiers: {
+                custom_id: () => 0xdead,
+                âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ: () => 0xdead,
+            },
+        };
+        expect(await parse_and_eval('custom_id', options)).to.be.equal(0xdead);
+        expect(await parse_and_eval('âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ', options)).to.be.equal(0xdead);
+
+        expect(await parse_and_eval(' custom_id  ', options)).to.be.equal(0xdead);
+        expect(await parse_and_eval('   âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ    ', options)).to.be.equal(0xdead);
+    });
+    it('should test asynchronous function identifiers', async () => {
+        // noinspection NonAsciiCharacters
+        const wait = () => new Promise(resolve => setTimeout(resolve, 10));
+        const options = {
+            identifiers: {
+                custom_id: async () => await wait() || 0xdead,
+                âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ: async () => await wait() ||0xdeaddead,
+            },
+        };
+        expect(await parse_and_eval('custom_id', options)).to.be.equal(0xdead);
+        expect(await parse_and_eval('âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ', options)).to.be.equal(0xdeaddead);
+
+        expect(await parse_and_eval(' custom_id  ', options)).to.be.equal(0xdead);
+        expect(await parse_and_eval('   âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ    ', options)).to.be.equal(0xdeaddead);
+    });
 });
 describe('test identifier order', () => {
     it('should test basic identifier order', async () => {
