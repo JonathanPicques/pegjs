@@ -44,11 +44,11 @@ type Expression =
     | SingleTypeExpression
     | SingleTypeTemplateExpression;
 type ExpressionResult = Expression | ExpressionLiteral;
-type ExpressionLiteral = null | number | string | boolean | {} | [];
+type ExpressionLiteral = [] | {} | null | number | string | boolean;
 
 interface ExpressionParserOptions extends PEG.ParserOptions {
     functions: Record<string, Function>;
-    identifiers: Record<string, ExpressionResult | (() => ExpressionResult) | (() => Promise<ExpressionResult>)>;
+    identifiers: Record<string, ExpressionResult> | ((identifier: string) => Promise<ExpressionResult>);
     identifiers_order: string[];
 }
 
@@ -219,11 +219,17 @@ export const evaluateExpression = async (expression: Expression, options: Expres
             );
         }
         case 'identifier': {
-            const identifier = options.identifiers[expression.name];
-            if (typeof identifier !== 'undefined') {
-                return (typeof identifier === 'function' ? await identifier() : identifier);
+            switch (typeof options.identifiers) {
+                case 'object': {
+                    const identifier = options.identifiers[expression.name];
+                    return typeof identifier === 'undefined' ? null : options.identifiers[expression.name];
+                }
+                case 'function': {
+                    return await options.identifiers(expression.name);
+                }
+                default:
+                    return null;
             }
-            return null;
         }
         case 'function_call': {
             const fn = options.functions[expression.name];

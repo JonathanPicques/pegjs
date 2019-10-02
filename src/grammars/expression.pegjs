@@ -159,18 +159,12 @@ IdentifierReserved
 //////////////
 
 Literal
-	= value:NullLiteral { return {type: 'literal', value}; }
-	/ ArrayLiteral
+	= ArrayLiteral
 	/ ObjectLiteral
+	/ value:NullLiteral { return {type: 'literal', value}; }
 	/ value:NumberLiteral { return {type: 'literal', value}; }
 	/ value:StringLiteral { return {type: 'literal', value}; }
 	/ value:BooleanLiteral { return {type: 'literal', value}; }
-
-NullLiteral "null"
-	= NullLiteralToken { return null; }
-
-NullLiteralToken
-	= "null" !IdentifierPart
 
 ArrayLiteral "array"
 	= "[" __ values: (Literal ","? __)* __ "]" { return {type: 'array_literal', value: values.map(v => v[0])}; }
@@ -186,6 +180,12 @@ ObjectValue
 
 ObjectKeyValue
 	= __ key:ObjectKey __ ":" __ value:Literal __ { return {[key]: value} }
+
+NullLiteral "null"
+	= NullLiteralToken { return null; }
+
+NullLiteralToken
+	= "null" !IdentifierPart
 
 NumberLiteral "number"
 	= HexaLiteral
@@ -220,16 +220,6 @@ DecimalLiteralExponentialPart
 
 ExponentialLiteralToken
     = "e"i
-
-BooleanLiteral "boolean"
-	= TrueLiteralToken { return true; }
-	/ FalseLiteralToken { return false; }
-
-TrueLiteralToken
-	= "true" !IdentifierPart
-
-FalseLiteralToken
-	= "false" !IdentifierPart
 
 StringLiteral "string"
 	= '"' chars:DoubleStringCharacter* '"' { return chars.join(""); }
@@ -293,3 +283,13 @@ UnicodeEscapeSequence
 
 Character
 	= .
+
+BooleanLiteral "boolean"
+	= TrueLiteralToken { return true; }
+	/ FalseLiteralToken { return false; }
+
+TrueLiteralToken
+	= "true" !IdentifierPart
+
+FalseLiteralToken
+	= "false" !IdentifierPart

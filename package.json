@@ -1,6 +1,6 @@
 {
   "name": "pegjs-expression-parser",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "PEGJS libraries for common use cases",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
