@@ -24,13 +24,14 @@ PropertyAccessorExpression
 
 UnaryExpression
 	= PropertyAccessorExpression
-	/ head:UnaryOperator* __ tail:PropertyAccessorExpression { return unary_operation(head, tail); }
+	/ head:(__ UnaryOperator)* __ tail:PropertyAccessorExpression { return unary_operation(head.map(h => h[1]), tail); }
 
 UnaryOperator
 	= $("+" !"+")
 	/ $("-" !"-")
 	/ $"~"
 	/ $"!"
+    / $"NOT"
 
 ExponentiationExpression
 	= head:UnaryExpression tail:(__ ExponentiationOperator __ UnaryExpression)* { return binary_operation(head, tail); }
@@ -153,6 +154,7 @@ IdentifierReserved
 	/ BooleanLiteral
 	/ "AND"
 	/ "OR"
+    / "NOT"
 
 //////////////
 // Literals //

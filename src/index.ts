@@ -1,6 +1,6 @@
 import * as PEG from 'pegjs';
 
-type UnaryOperator = '~' | '!' | '+' | '-';
+type UnaryOperator = '~' | '!' | '+' | '-' | 'NOT';
 type BinaryOperator =
     // op
     | '**'
@@ -142,6 +142,7 @@ export const evaluateExpression = async (expression: Expression, options: Expres
                     case '~':
                         return ~acc;
                     case '!':
+                    case 'NOT':
                         return !acc;
                     case '+':
                         return +acc;

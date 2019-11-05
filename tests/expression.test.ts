@@ -151,9 +151,11 @@ describe('test identifier', () => {
         expect(await parse_and_eval('âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ_12__')).to.be.equal(null);
         expect(await parse_and_eval('_ä_ë__$$__k_')).to.be.equal(null);
 
+        await expect(parse_and_eval('9var')).to.be.eventually.rejectedWith(Error);
         await expect(parse_and_eval('9true')).to.be.eventually.rejectedWith(Error);
-        await expect(parse_and_eval('AND')).to.be.eventually.rejectedWith(Error);
         await expect(parse_and_eval('OR')).to.be.eventually.rejectedWith(Error);
+        await expect(parse_and_eval('AND')).to.be.eventually.rejectedWith(Error);
+        await expect(parse_and_eval('NOT')).to.be.eventually.rejectedWith(Error);
     });
     it('should test default math identifiers', async () => {
         expect(await parse_and_eval('math_PI')).to.be.equal(Math.PI);
@@ -238,11 +240,20 @@ describe('test expression', () => {
         expect(await parse_and_eval('+-+100')).to.be.equal(+-+100);
 
         expect(await parse_and_eval('!10')).to.be.equal(!10);
+        expect(await parse_and_eval('NOT10')).to.be.equal(!10);
+        expect(await parse_and_eval('NOT 10')).to.be.equal(!10);
         expect(await parse_and_eval('!-+10')).to.be.equal(!-+10);
-        // noinspection PointlessBooleanExpressionJS
+        expect(await parse_and_eval('NOT-+10')).to.be.equal(!-+10);
+        expect(await parse_and_eval('NOT -+10')).to.be.equal(!-+10);
         expect(await parse_and_eval('!true')).to.be.equal(!true);
-        // noinspection PointlessBooleanExpressionJS
+        expect(await parse_and_eval('NOTtrue')).to.be.equal(!true);
+        expect(await parse_and_eval('NOT true')).to.be.equal(!true);
         expect(await parse_and_eval('!!!!!false')).to.be.equal(!!!!!false);
+        expect(await parse_and_eval('NOTNOTNOTNOTNOTfalse')).to.be.equal(!!!!!false);
+        expect(await parse_and_eval('NOTNOTNOTNOTNOT false')).to.be.equal(!!!!!false);
+        expect(await parse_and_eval('NOT NOTNOTNOT NOT false')).to.be.equal(!!!!!false);
+        expect(await parse_and_eval('NOT NOT NOT NOT NOTfalse')).to.be.equal(!!!!!false);
+        expect(await parse_and_eval('NOT NOT NOT NOT NOT false')).to.be.equal(!!!!!false);
 
         expect(await parse_and_eval('~10')).to.be.equal(~10);
         expect(await parse_and_eval('~100')).to.be.equal(~100);
@@ -251,6 +262,8 @@ describe('test expression', () => {
         await expect(parse_and_eval('--10')).to.be.eventually.rejectedWith(Error);
         await expect(parse_and_eval('++10')).to.be.eventually.rejectedWith(Error);
         await expect(parse_and_eval('+++10')).to.be.eventually.rejectedWith(Error);
+        await expect(parse_and_eval('false NOT')).to.be.eventually.rejectedWith(Error);
+        await expect(parse_and_eval('false + NOT')).to.be.eventually.rejectedWith(Error);
     });
     it('should test exponentiation expressions', async () => {
         expect(await parse_and_eval('2 ** 6')).to.be.equal(2 ** 6);
