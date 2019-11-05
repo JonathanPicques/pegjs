@@ -48,7 +48,7 @@ type ExpressionLiteral = [] | {} | null | number | string | boolean;
 
 interface ExpressionParserOptions extends PEG.ParserOptions {
     functions: Record<string, Function>;
-    identifiers: Record<string, ExpressionResult> | ((identifier: string) => Promise<ExpressionResult>);
+    identifiers: Record<string, ExpressionResult> | ((identifier: string) => ExpressionResult) | ((identifier: string) => Promise<ExpressionResult>);
     identifiers_order: string[];
 }
 
