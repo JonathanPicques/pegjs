@@ -13,12 +13,17 @@
         "editor.formatOnSave": true,
         "editor.insertSpaces": true,
         "editor.detectIndentation": false,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": true
+        },
         // Eslint
-        "eslint.validate": ["javascript"],
-        "eslint.autoFixOnSave": true,
+        "eslint.validate": ["javascript", "typescript"],
+        "eslint.workingDirectories": ["src"],
         // Git Lens
         "gitlens.codeLens.enabled": false,
         // Terminal
         "terminal.integrated.shell.windows": "C:\\Program Files\\Git\\bin\\bash.exe",
+        // Typescript
+        "typescript.tsdk": "node_modules/typescript/lib"
     }
 }

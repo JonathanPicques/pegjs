@@ -169,7 +169,7 @@ Literal
 	/ value:BooleanLiteral { return {type: 'literal', value}; }
 
 ArrayLiteral "array"
-	= "[" __ values: (Literal ","? __)* __ "]" { return {type: 'array_literal', value: values.map(v => v[0])}; }
+	= "[" __ values: (Expression ","? __)* __ "]" { return {type: 'array_literal', value: values.map(v => v[0])}; }
 
 ObjectLiteral "object"
 	= "{" __ entries:(ObjectKeyValue ","? __)* "}" { return {type: 'object_literal', value: entries.reduce((a, op) => Object.assign(a, op[0]), {})}; }
@@ -178,10 +178,10 @@ ObjectKey
 	= IdentifierName / NullLiteral / StringLiteral / BooleanLiteral
 
 ObjectValue
-	= Literal
+	= Expression
 
 ObjectKeyValue
-	= __ key:ObjectKey __ ":" __ value:Literal __ { return {[key]: value} }
+	= __ key:ObjectKey __ ":" __ value:ObjectValue __ { return {[key]: value} }
 
 NullLiteral "null"
 	= NullLiteralToken { return null; }

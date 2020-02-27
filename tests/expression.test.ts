@@ -432,7 +432,14 @@ describe('test expression', () => {
                 b: {
                     inner: [1, {sub: 'yes'}, 3],
                 },
-                c: [[], [[20, 40], [20, {sub: 42}]], {}],
+                c: [
+                    [],
+                    [
+                        [20, 40],
+                        [20, {sub: 42}],
+                    ],
+                    {},
+                ],
             },
         };
         expect(await parse_and_eval('a[2]', options)).to.be.equal(3);
@@ -441,7 +448,7 @@ describe('test expression', () => {
         expect(await parse_and_eval("b['inner'][1].sub", options)).to.be.equal('yes');
         expect(await parse_and_eval('c[1][1][1].sub', options)).to.be.equal(42);
 
-        expect(await parse_and_eval('[[[{o: [[[true]]]}]]][0][0][0].o[0][0][0]', options)).to.be.equal(true);
+        expect(await parse_and_eval('[{o: [[true]]}][0].o[0][0]', options)).to.be.equal(true);
     });
 });
 describe('test expression precedence', () => {
@@ -482,5 +489,13 @@ describe('test complex expression', () => {
         expect(await parse_and_eval('1 -  -(- true ? (32 * ((34 + 10) - + 10) & 32 | 78) : 24 ^  321    )')).to.be.equal(
             1 - -(-true ? ((32 * (34 + 10 - +10)) & 32) | 78 : 24 ^ 321),
         );
+    });
+});
+describe('test literal expression', () => {
+    it('should test an object literal with an expression value', async () => {
+        expect(await parse_and_eval('{value: {value: -2 + 1}.value + 3}')).to.be.deep.equal({value: 2});
+    });
+    it('should test an array literal with expression values', async () => {
+        expect(await parse_and_eval('[1 + 1, 2 + 2, 8, {}, [1, 2, 3, 4].length * 4]')).to.be.deep.equal([2, 4, 8, {}, 16]);
     });
 });
