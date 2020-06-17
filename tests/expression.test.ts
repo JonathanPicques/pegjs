@@ -214,6 +214,20 @@ describe('test identifier', () => {
         expect(await parse_and_eval(' custom_id  ', options)).to.be.equal(0xdead);
         expect(await parse_and_eval('   âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ    ', options)).to.be.equal(0xdeaddead);
     });
+    it('should test identifiers in accessors', async () => {
+        // noinspection NonAsciiCharacters
+        const options = {
+            identifiers: {
+                x: 1,
+                y: 2,
+                name: 'Jonathan',
+            },
+        };
+        expect(await parse_and_eval('[[1, 2, 3], [4, 5, 6], [7, 8, 9]][y][x]', options)).to.be.equal(8);
+        expect(await parse_and_eval('([[1, 2, 3], [4, 5, 6], [7, 8, 9]][y])[x]', options)).to.be.equal(8);
+        expect(await parse_and_eval('{"Jonathan": {age: 32}, "Vincent": {age: 42}}[name].age', options)).to.be.eq(32);
+        expect(await parse_and_eval('({"Jonathan": {age: 32}, "Vincent": {age: 42}}[name]).age', options)).to.be.eq(32);
+    });
 });
 describe('test identifier order', () => {
     it('should test basic identifier order', async () => {
