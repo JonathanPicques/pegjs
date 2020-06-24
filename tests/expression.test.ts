@@ -115,6 +115,7 @@ describe('test function', () => {
         expect(await parse_and_eval('number_unknown(32)')).to.be.equal(null);
     });
     it('should test default string functions', async () => {
+        expect(await parse_and_eval("string_concat('hello ', 'dear ', 'love ', 'we ', 'missed ', 'you')")).to.be.equal('hello dear love we missed you');
         expect(await parse_and_eval("string_replace('hello dear friend', 'friend', 'love')")).to.be.equal('hello dear love');
 
         expect(await parse_and_eval('string_unknown(32)')).to.be.equal(null);
@@ -227,6 +228,17 @@ describe('test identifier', () => {
         expect(await parse_and_eval('([[1, 2, 3], [4, 5, 6], [7, 8, 9]][y])[x]', options)).to.be.equal(8);
         expect(await parse_and_eval('{"Jonathan": {age: 32}, "Vincent": {age: 42}}[name].age', options)).to.be.eq(32);
         expect(await parse_and_eval('({"Jonathan": {age: 32}, "Vincent": {age: 42}}[name]).age', options)).to.be.eq(32);
+    });
+    it('should test an equality expression with a function and an identifier', async () => {
+        // noinspection NonAsciiCharacters
+        const options = {
+            identifiers: {
+                my_text: '   yes   ',
+                my_text2: '  SeaRch ',
+            },
+        };
+        expect(await parse_and_eval('string_trim(my_text)', options)).to.be.equal('yes');
+        expect(await parse_and_eval('"search" === string_trim(string_toLowerCase(my_text2))', options)).to.be.equal(true);
     });
 });
 describe('test identifier order', () => {
