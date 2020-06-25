@@ -92,33 +92,55 @@ describe('test literal', () => {
 });
 describe('test function', () => {
     it('should test basic functions', async () => {
-        expect(async () => await parse_and_eval('math_sin()')).to.not.throw();
-        expect(async () => await parse_and_eval('math_sin(32)')).to.not.throw();
-        expect(async () => await parse_and_eval("math_sin(32, 'hello')")).to.not.throw();
-        expect(async () => await parse_and_eval("math_sin(32, 'hello', false)")).to.not.throw();
-        expect(async () => await parse_and_eval("math_sin(32, 'hello', false, 34 >> (2))")).to.not.throw();
+        expect(async () => await parse_and_eval('Math_sin()')).to.not.throw();
+        expect(async () => await parse_and_eval('Math_sin(32)')).to.not.throw();
+        expect(async () => await parse_and_eval("Math_sin(32, 'hello')")).to.not.throw();
+        expect(async () => await parse_and_eval("Math_sin(32, 'hello', false)")).to.not.throw();
+        expect(async () => await parse_and_eval("Math_sin(32, 'hello', false, 34 >> (2))")).to.not.throw();
 
-        await expect(parse_and_eval('math_sin(,)')).to.be.eventually.rejectedWith(Error);
-        await expect(parse_and_eval('math_sin(, 32)')).to.be.eventually.rejectedWith(Error);
-        await expect(parse_and_eval('math_sin(32,)')).to.be.eventually.rejectedWith(Error);
-        await expect(parse_and_eval('math_sin(32, )')).to.be.eventually.rejectedWith(Error);
+        await expect(parse_and_eval('Math_sin(,)')).to.be.eventually.rejectedWith(Error);
+        await expect(parse_and_eval('Math_sin(, 32)')).to.be.eventually.rejectedWith(Error);
+        await expect(parse_and_eval('Math_sin(32,)')).to.be.eventually.rejectedWith(Error);
+        await expect(parse_and_eval('Math_sin(32, )')).to.be.eventually.rejectedWith(Error);
     });
     it('should test default math functions', async () => {
-        expect(await parse_and_eval('math_pow(2, 6)')).to.be.equal(Math.pow(2, 6));
-        expect(await parse_and_eval('math_sin(32)')).to.be.equal(Math.sin(32));
+        expect(await parse_and_eval('Math_pow(2, 6)')).to.be.equal(Math.pow(2, 6));
+        expect(await parse_and_eval('Math_sin(32)')).to.be.equal(Math.sin(32));
 
-        expect(await parse_and_eval('math_unknown(32)')).to.be.equal(null);
+        expect(await parse_and_eval('Math_unknown(32)')).to.be.equal(null);
     });
     it('should test default number functions', async () => {
-        expect(await parse_and_eval("number_parseFloat('34.8__hello')")).to.be.equal(Number.parseFloat('34.8__hello'));
+        expect(await parse_and_eval('Number_isInteger(32)')).to.be.equal(true);
+        expect(await parse_and_eval('Number_isInteger(32.5)')).to.be.equal(false);
+        expect(await parse_and_eval("Number_parseFloat('34.8__hello')")).to.be.equal(Number.parseFloat('34.8__hello'));
+
+        expect(await parse_and_eval('Number_unknown(32)')).to.be.equal(null);
+    });
+    it('should test default string functions', async () => {
+        expect(await parse_and_eval('String_fromCharCode(65)')).to.be.equal('A');
+        expect(await parse_and_eval('String_fromCodePoint(65, 66)')).to.be.equal('AB');
+
+        expect(await parse_and_eval('String_unknown(65, 66, 67)')).to.be.equal(null);
+    });
+    it('should test default boolean functions', async () => {
+        expect(await parse_and_eval('Boolean_unknown(false, true)')).to.be.equal(null);
+    });
+    it('should test default number prototype functions', async () => {
+        expect(await parse_and_eval('number_toExponential(3)')).to.be.equal('3e+0');
 
         expect(await parse_and_eval('number_unknown(32)')).to.be.equal(null);
     });
-    it('should test default string functions', async () => {
+    it('should test default string prototype functions', async () => {
         expect(await parse_and_eval("string_concat('hello ', 'dear ', 'love ', 'we ', 'missed ', 'you')")).to.be.equal('hello dear love we missed you');
         expect(await parse_and_eval("string_replace('hello dear friend', 'friend', 'love')")).to.be.equal('hello dear love');
 
         expect(await parse_and_eval('string_unknown(32)')).to.be.equal(null);
+    });
+    it('should test default string prototype functions', async () => {
+        expect(await parse_and_eval('boolean_toString(true)')).to.be.equal('true');
+        expect(await parse_and_eval('boolean_toString(false)')).to.be.equal('false');
+
+        expect(await parse_and_eval('boolean_unknown(true)')).to.be.equal(null);
     });
     it('should test custom functions', async () => {
         // noinspection NonAsciiCharacters
@@ -159,13 +181,26 @@ describe('test identifier', () => {
         await expect(parse_and_eval('NOT')).to.be.eventually.rejectedWith(Error);
     });
     it('should test default math identifiers', async () => {
-        expect(await parse_and_eval('math_PI')).to.be.equal(Math.PI);
-        expect(await parse_and_eval('math_E')).to.be.equal(Math.E);
-        expect(await parse_and_eval('math_Unknown')).to.be.equal(null);
+        expect(await parse_and_eval('Math_PI')).to.be.equal(Math.PI);
+        expect(await parse_and_eval('Math_E')).to.be.equal(Math.E);
+        expect(await parse_and_eval('Math_unknown')).to.be.equal(null);
 
-        expect(await parse_and_eval('   math_PI')).to.be.equal(Math.PI);
-        expect(await parse_and_eval('       math_E  ')).to.be.equal(Math.E);
-        expect(await parse_and_eval('  math_Unknown')).to.be.equal(null);
+        expect(await parse_and_eval('   Math_PI')).to.be.equal(Math.PI);
+        expect(await parse_and_eval('       Math_E  ')).to.be.equal(Math.E);
+        expect(await parse_and_eval('  Math_unknown')).to.be.equal(null);
+    });
+    it('should test default number identifiers', async () => {
+        expect(await parse_and_eval('Number_MAX_SAFE_INTEGER')).to.be.equal(Number.MAX_SAFE_INTEGER);
+        expect(await parse_and_eval('Number_NEGATIVE_INFINITY')).to.be.equal(Number.NEGATIVE_INFINITY);
+        expect(await parse_and_eval('Number_POSITIVE_INFINITY')).to.be.equal(Number.POSITIVE_INFINITY);
+
+        expect(await parse_and_eval('Number_unknown')).to.be.equal(null);
+    });
+    it('should test default string identifiers', async () => {
+        expect(await parse_and_eval('String_unknown')).to.be.equal(null);
+    });
+    it('should test default boolean identifiers', async () => {
+        expect(await parse_and_eval('Boolean_unknown')).to.be.equal(null);
     });
     it('should test custom identifiers', async () => {
         // noinspection NonAsciiCharacters
@@ -249,12 +284,12 @@ describe('test identifier order', () => {
     });
     it('should test identifier order with pre-existing identifiers', async () => {
         const options = {identifiers_order: []};
-        await parse_and_eval('my + story + math_PI + is + interesting', options);
+        await parse_and_eval('my + story + Math_PI + is + interesting', options);
         expect([...options.identifiers_order]).to.be.deep.equal(['my', 'story', 'is', 'interesting']);
     });
     it('should test identifier order with pre-existing identifiers and functions', async () => {
         const options = {identifiers_order: []};
-        await parse_and_eval('my + story + math_PI + is + math_sin(32) + interesting', options);
+        await parse_and_eval('my + story + Math_PI + is + Math_sin(32) + interesting', options);
         expect([...options.identifiers_order]).to.be.deep.equal(['my', 'story', 'is', 'interesting']);
     });
 });
@@ -406,8 +441,8 @@ describe('test expression', () => {
         expect(await parse_and_eval('number < 10 ? 10 + number : 20 + number', options)).to.be.equal(62);
         expect(await parse_and_eval('number > 10 ? number + 10 : number + 20', options)).to.be.equal(52);
         expect(await parse_and_eval('number < 10 ? number + 10 : number + 20', options)).to.be.equal(62);
-        expect(await parse_and_eval('number / math_PI * 5', options)).to.be.equal((42 / Math.PI) * 5);
-        expect(await parse_and_eval('math_PI / number * 5', options)).to.be.equal((Math.PI / 42) * 5);
+        expect(await parse_and_eval('number / Math_PI * 5', options)).to.be.equal((42 / Math.PI) * 5);
+        expect(await parse_and_eval('Math_PI / number * 5', options)).to.be.equal((Math.PI / 42) * 5);
         expect(await parse_and_eval('a > b ? d + e + f > 0 : a + b + 1', options)).to.be.equal(4);
         expect(await parse_and_eval('(a > b) ? (d + e + f > 0) : (a + b + 1)', options)).to.be.equal(4);
     });
