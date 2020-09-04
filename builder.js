@@ -6,4 +6,10 @@ const grammar_unicode = fs.readFileSync(path.join('src', 'grammars', 'unicode.pe
 const grammar_expression = fs.readFileSync(path.join('src', 'grammars', 'expression.pegjs'));
 const grammar_abstraction = fs.readFileSync(path.join('src', 'grammars', 'abstraction.pegjs'));
 
-fs.writeFileSync('expression.pegjs', `${grammar_abstraction}${grammar_type}${grammar_expression}${grammar_unicode}`);
+fs.writeFileSync(
+    'expression.pegjs',
+    `${grammar_abstraction}
+${grammar_type}
+${grammar_expression}
+${grammar_unicode}`,
+);

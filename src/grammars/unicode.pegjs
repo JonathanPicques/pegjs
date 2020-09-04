@@ -2,6 +2,10 @@
 // Unicode whitespaces and line terminators //
 //////////////////////////////////////////////
 
+_
+    = UnicodeWhitespace*
+    / UnicodeLineTerminatorSequence*
+
 __
     = UnicodeWhitespace*
 
