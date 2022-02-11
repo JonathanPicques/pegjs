@@ -10,3 +10,4 @@ SingleType "single type"
 
 SingleTypeTemplate "single type template"
 	= "<" __ types:(__ UnionType __ "," __)* __ type:UnionType __ ">" { return {type: 'single_type_template', types: [...types.map(t => t[1]), type]}; }
+

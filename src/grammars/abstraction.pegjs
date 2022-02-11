@@ -27,3 +27,4 @@
 		return {type: 'binary', head, tail: tail.map(t => ({operand: t[3], operator: t[1]}))};
 	};
 }
+

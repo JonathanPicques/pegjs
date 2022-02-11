@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as peg from 'pegjs';
+import * as peg from 'peggy';
 import * as path from 'path';
 import * as chai from 'chai';
 import * as mocha from 'mocha';
@@ -220,10 +220,12 @@ describe('test identifier', () => {
         // noinspection NonAsciiCharacters
         const options = {
             identifiers: (name: string) => {
-                return ({
-                    custom_id: 0xdead,
-                    âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ: 0xdeaddead,
-                } as any)[name];
+                return (
+                    {
+                        custom_id: 0xdead,
+                        âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ: 0xdeaddead,
+                    } as any
+                )[name];
             },
         };
         expect(await parse_and_eval('custom_id', options)).to.be.equal(0xdead);
@@ -238,10 +240,12 @@ describe('test identifier', () => {
         const options = {
             identifiers: async (name: string) => {
                 await wait();
-                return ({
-                    custom_id: 0xdead,
-                    âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ: 0xdeaddead,
-                } as any)[name];
+                return (
+                    {
+                        custom_id: 0xdead,
+                        âäêëîïôöûüÂÄÊËÎÏÔÖÛÜ: 0xdeaddead,
+                    } as any
+                )[name];
             },
         };
         expect(await parse_and_eval('custom_id', options)).to.be.equal(0xdead);
@@ -452,14 +456,16 @@ describe('test expression', () => {
                 if (name.startsWith('invalid_')) {
                     throw new Error('Cannot get invalid property');
                 }
-                return ({
-                    value1a: 12,
-                    value2a: 0,
-                    valid_id: 42,
-                    invalid_id: 0xdead,
-                    valid_id_obj: {test: 32},
-                    invalid_id_obj: {test: 0xdead},
-                } as any)[name];
+                return (
+                    {
+                        value1a: 12,
+                        value2a: 0,
+                        valid_id: 42,
+                        invalid_id: 0xdead,
+                        valid_id_obj: {test: 32},
+                        invalid_id_obj: {test: 0xdead},
+                    } as any
+                )[name];
             },
         };
 

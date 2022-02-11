@@ -169,7 +169,11 @@ Literal
 	/ value:BooleanLiteral { return {type: 'literal', value}; }
 
 ArrayLiteral "array"
-	= "[" __ values: (Expression ","? __)* __ "]" { return {type: 'array_literal', value: values.map(v => v[0])}; }
+	= '[' __ items:ArrayLiteralItem? __ ']' { return {type: 'array_literal', value: items || [] }; }
+
+ArrayLiteralItem
+	= head:Expression __ ',' __ tail:ArrayLiteralItem { return [head, ...tail]; }
+    / value:Expression { return [value]; }
 
 ObjectLiteral "object"
 	= "{" __ entries:(ObjectKeyValue ","? __)* "}" { return {type: 'object_literal', value: entries.reduce((a, op) => Object.assign(a, op[0]), {})}; }
@@ -295,3 +299,4 @@ TrueLiteralToken
 
 FalseLiteralToken
 	= "false" !IdentifierPart
+

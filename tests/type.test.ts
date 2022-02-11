@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import * as peg from 'pegjs';
+import * as peg from 'peggy';
 import * as path from 'path';
 import * as chai from 'chai';
 import * as mocha from 'mocha';
