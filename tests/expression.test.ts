@@ -12,14 +12,7 @@ const it = mocha.it;
 const expect = chai.expect;
 const describe = mocha.describe;
 
-const grammar_abstraction = fs.readFileSync(path.join('src', 'grammars', 'abstraction.pegjs'));
-const grammar_expression = fs.readFileSync(path.join('src', 'grammars', 'expression.pegjs'));
-const grammar_unicode = fs.readFileSync(path.join('src', 'grammars', 'unicode.pegjs'));
-const parser = peg.generate(`
-    ${grammar_abstraction.toString()}
-    ${grammar_expression.toString()}
-    ${grammar_unicode.toString()}
-`);
+const parser = peg.generate(fs.readFileSync(path.join('src', 'grammar.pegjs')).toString(), {allowedStartRules: ['Expression']});
 const parse_and_eval = generateExpressionEvaluator(parser);
 
 describe('test literal', () => {

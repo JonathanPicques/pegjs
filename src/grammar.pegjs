@@ -1,3 +1,46 @@
+/////////////////
+// Abstraction //
+/////////////////
+
+{
+    // Static functions
+	options.functions = Object.assign(options.functions || {}, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] === "function").reduce((a, op) => { a[`Math_${op}`] = Math[op]; return a; }, {}));
+	options.functions = Object.assign(options.functions || {}, Object.getOwnPropertyNames(Number).filter(n => typeof Number[n] === "function").reduce((a, op) => { a[`Number_${op}`] = Number[op]; return a; }, {}));
+	options.functions = Object.assign(options.functions || {}, Object.getOwnPropertyNames(String).filter(n => typeof String[n] === "function").reduce((a, op) => { a[`String_${op}`] = String[op]; return a; }, {}));
+	options.functions = Object.assign(options.functions || {}, Object.getOwnPropertyNames(Boolean).filter(n => typeof Boolean[n] === "function").reduce((a, op) => { a[`Boolean_${op}`] = Boolean[op]; return a; }, {}));
+    // Prototype functions
+	options.functions = Object.assign(options.functions || {}, Object.getOwnPropertyNames(Number.prototype).filter(n => n !== "constructor" && typeof Number.prototype[n] === "function").reduce((a, op) => { a[`number_${op}`] = (nb, ...args) => { return Number.prototype[op].call(nb, ...args); }; return a; }, {}));
+	options.functions = Object.assign(options.functions || {}, Object.getOwnPropertyNames(String.prototype).filter(n => n !== "constructor" && typeof String.prototype[n] === "function").reduce((a, op) => { a[`string_${op}`] = (str, ...args) => { return String.prototype[op].call(str, ...args); }; return a; }, {}));
+	options.functions = Object.assign(options.functions || {}, Object.getOwnPropertyNames(Boolean.prototype).filter(n => n !== "constructor" && typeof Boolean.prototype[n] === "function").reduce((a, op) => { a[`boolean_${op}`] = (bool, ...args) => { return Boolean.prototype[op].call(bool, ...args); }; return a; }, {}));
+    // Javascript identifiers
+	options.identifiers = Object.assign(options.identifiers || {}, Object.getOwnPropertyNames(Math).filter(n => typeof Math[n] !== "function").reduce((a, op) => { a["Math_" + op] = Math[op]; return a; }, {}));
+	options.identifiers = Object.assign(options.identifiers || {}, Object.getOwnPropertyNames(Number).filter(n => typeof Number[n] !== "function").reduce((a, op) => { a["Number_" + op] = Number[op]; return a; }, {}));
+	options.identifiers = Object.assign(options.identifiers || {}, Object.getOwnPropertyNames(String).filter(n => typeof String[n] !== "function").reduce((a, op) => { a["String_" + op] = String[op]; return a; }, {}));
+	options.identifiers = Object.assign(options.identifiers || {}, Object.getOwnPropertyNames(Boolean).filter(n => typeof Boolean[n] !== "function").reduce((a, op) => { a["Boolean_" + op] = Boolean[op]; return a; }, {}));
+    // User generated identifiers order
+	options.identifiers_order = [];
+
+	const unary_operation = (head, tail) => {
+		return {type: 'unary', head: head.map(operator => ({operator})), tail};
+	};
+	const binary_operation = (head, tail) => {
+		return {type: 'binary', head, tail: tail.map(t => ({operand: t[3], operator: t[1]}))};
+	};
+}
+
+/////////////////
+// Type system //
+/////////////////
+
+UnionType "union type"
+	= types:(__ SingleType __ "|" __)* __ type:SingleType { return {type: 'union_type', types: [...types.map(t => t[1]), type]}; }
+
+SingleType "single type"
+	= name:IdentifierName template:SingleTypeTemplate? config:ObjectLiteral? { return ({type: 'single_type', name, config, fullname: text(), template}); }
+
+SingleTypeTemplate "single type template"
+	= "<" __ types:(__ UnionType __ "," __)* __ type:UnionType __ ">" { return {type: 'single_type_template', types: [...types.map(t => t[1]), type]}; }
+
 ////////////////
 // Expression //
 ////////////////
@@ -115,9 +158,9 @@ ConditionalExpression
 	/ value:LogicalOrExpression __ "?:" __ false_path:ConditionalExpression { return {type: 'conditional', value, true_path: value, false_path}; }
 	/ LogicalOrExpression
 
-///////////////
-// Functions //
-///////////////
+//////////////////////////
+// Expression Functions //
+//////////////////////////
 
 Function
 	= name:IdentifierName __ "(" __ args:FunctionArguments? __ ")" { return {type: 'function_call', name, args: args || []}; }
@@ -125,9 +168,9 @@ Function
 FunctionArguments
 	= expression:Expression expressions:(__ "," __ Expression __ )* { return [expression, ...expressions.map(e => e[3])]; }
 
-/////////////////
-// Identifiers //
-/////////////////
+////////////////////////////
+// Expression Identifiers //
+////////////////////////////
 
 Identifier
 	= name:IdentifierName { 
@@ -156,9 +199,9 @@ IdentifierReserved
 	/ "OR"
     / "NOT"
 
-//////////////
-// Literals //
-//////////////
+/////////////////////////
+// Expression Literals //
+/////////////////////////
 
 Literal
 	= ArrayLiteral
@@ -181,11 +224,8 @@ ObjectLiteral "object"
 ObjectKey
 	= IdentifierName / NullLiteral / StringLiteral / BooleanLiteral
 
-ObjectValue
-	= Expression
-
 ObjectKeyValue
-	= __ key:ObjectKey __ ":" __ value:ObjectValue __ { return {[key]: value} }
+	= __ key:ObjectKey __ ":" __ value:Expression __ { return {[key]: value} }
 
 NullLiteral "null"
 	= NullLiteralToken { return null; }
@@ -300,3 +340,54 @@ TrueLiteralToken
 FalseLiteralToken
 	= "false" !IdentifierPart
 
+//////////////////////////////////////////////
+// Unicode whitespaces and line terminators //
+//////////////////////////////////////////////
+
+__
+    = UnicodeWhitespace*
+
+UnicodeWhitespace
+	= "\t"
+	/ "\v"
+	/ "\f"
+	/ " "
+	/ "\u00A0"
+	/ "\uFEFF"
+	/ [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
+
+UnicodeLineTerminator
+	= [\n\r\u2028\u2029]
+
+UnicodeLineTerminatorSequence
+	= "\n"
+	/ "\r\n"
+	/ "\r"
+	/ "\u2028"
+	/ "\u2029"
+
+/////////////////////
+// Unicode letters //
+/////////////////////
+
+UnicodeLatinLetter
+	= UnicodeLatinBasicLetter
+	/ UnicodeLatinSupplementLetter
+	/ UnicodeLatinExtendedALetter
+	/ UnicodeLatinExtendedBLetter
+	/ UnicodeLatinExtendedAdditionalLetter
+
+UnicodeLatinBasicLetter
+	= [\u0041-\u005a\u0061-\u007a]
+
+UnicodeLatinSupplementLetter
+	= [\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u00ff]
+
+UnicodeLatinExtendedALetter
+	= [\u0100-\u017f]
+
+UnicodeLatinExtendedBLetter
+	= [\u0180-\u024f]
+
+UnicodeLatinExtendedAdditionalLetter
+	= [\u1e00-\u1eff]
