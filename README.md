@@ -45,6 +45,14 @@ Defines a grammar for parsing code types with the following format: `String{mult
 -   `SingleType`
 -   `SingleTypeTemplate`
 
+## PostgREST
+
+Defines a grammar for parsing simple postgrest queries with an excel-like format: `OR(lastname = "Doe", NOT(firstname = "John"))`
+
+### Defines
+
+-   `Postgrest`
+
 ## Unicode helpers
 
 Defines a grammar for several unicode handy ranges _(Not made to be accurate.)_

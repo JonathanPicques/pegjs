@@ -12,7 +12,7 @@ const it = mocha.it;
 const expect = chai.expect;
 const describe = mocha.describe;
 
-const parser = peg.generate(fs.readFileSync(path.join('src', 'grammar.pegjs')).toString());
+const parser = peg.generate(fs.readFileSync(path.join('src', 'grammar.pegjs')).toString(), {allowedStartRules: ['UnionType']});
 const parse_and_eval = generateExpressionEvaluator(parser);
 
 describe('test type', () => {
