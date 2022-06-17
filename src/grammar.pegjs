@@ -59,7 +59,7 @@ PostgrestLogicalItem
     / p:PostgrestLogicalArg { return [p]; }
 
 PostgrestFunction
-    = name:("FTS"i / "WFTS"i / "PLFTS"i) "(" __ column:PostgrestColumnName __ "," __ value:StringLiteral __ ")" { return {name: name.toLowerCase(), value: encodeURI(value), column}; }
+    = name:("LIKE"i / "ILIKE"i / "FTS"i / "WFTS"i / "PLFTS"i) "(" __ column:PostgrestColumnName __ "," __ value:StringLiteral __ ")" { return {name: name.toLowerCase(), value: encodeURI(value), column}; }
 
 PostgrestComparison
     = column:PostgrestColumnName __ name:("!=" / "<=" / ">=" / "<" / ">" / "=") __ value:Literal { return {column, name: comparison_operators[name], value: value.value}; }
